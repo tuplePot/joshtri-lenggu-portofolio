@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'a'> {
+  href: string;
+  class?: string;
+  target?: '_blank' | '_self' | '_parent' | '_top';
+  rel?: string;
+}
+
+const { href, class: className = '', target, rel, ...rest } = Astro.props;
+---
+
+<a
+  href={href}
+  class={className}
+  target={target}
+  rel={target === '_blank' ? 'noopener noreferrer' : rel}
+  {...rest}
+>
+  <slot />
+</a>

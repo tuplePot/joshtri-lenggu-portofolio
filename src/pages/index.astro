@@ -1,0 +1,82 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Hero from '../components/sections/Hero.astro';
+import Skills from '../components/sections/Skills.astro';
+import Projects from '../components/sections/Projects.astro';
+import Experience from '../components/sections/Experience.astro';
+import About from '../components/sections/About.astro';
+import Contact from '../components/sections/Contact.astro';
+import FloatingScrollToTop from '../components/ui/FloatingScrollToTop.astro';
+import FloatingWhatsApp from '../components/ui/FloatingWhatsApp.astro';
+import GalaxyCanvas from '../components/ui/GalaxyCanvas.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body class="bg-black text-white">
+
+    <!-- Page loader — fades out once DOM is ready -->
+    <div id="page-loader" class="fixed inset-0 z-[300] bg-[#050512] flex flex-col items-center justify-center gap-5 pointer-events-none">
+      <div class="flex flex-col items-center gap-1 select-none">
+        <span class="text-4xl font-bold text-white tracking-widest">JL</span>
+        <span class="text-[10px] text-blue-400 tracking-[0.35em] uppercase font-semibold">Portfolio</span>
+      </div>
+      <div class="flex gap-2 mt-1">
+        <span class="loader-dot w-2 h-2 rounded-full bg-blue-400"></span>
+        <span class="loader-dot w-2 h-2 rounded-full bg-blue-400" style="animation-delay:0.18s"></span>
+        <span class="loader-dot w-2 h-2 rounded-full bg-blue-400" style="animation-delay:0.36s"></span>
+      </div>
+    </div>
+
+    <!-- Single galaxy canvas fixed behind all sections -->
+    <div class="fixed inset-0 -z-10 w-full h-full">
+      <GalaxyCanvas />
+    </div>
+    <Header />
+    <main>
+      <Hero />
+      <About />
+      <Skills />
+      <Projects />
+      <Experience />
+      <Contact />
+    </main>
+    <Footer />
+    <FloatingScrollToTop />
+    <FloatingWhatsApp phone="6281234567890" message="Hi Joshtri! I'd like to get in touch." />
+  </body>
+</html>
+
+<script>
+  const loader = document.getElementById('page-loader');
+  if (loader) {
+    loader.style.transition = 'opacity 0.6s ease';
+    const hide = () => {
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 650);
+      }, 500);
+    };
+    if (document.readyState === 'complete') {
+      hide();
+    } else {
+      window.addEventListener('load', hide, { once: true });
+    }
+  }
+</script>
+
+<style>
+  @keyframes dot-pulse {
+    0%, 80%, 100% { transform: scale(0.55); opacity: 0.35; }
+    40%           { transform: scale(1);    opacity: 1;    }
+  }
+  .loader-dot {
+    animation: dot-pulse 1.3s ease-in-out infinite;
+  }
+</style>

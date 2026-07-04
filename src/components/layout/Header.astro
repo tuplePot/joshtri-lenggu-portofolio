@@ -1,0 +1,263 @@
+---
+import { Icon } from 'astro-icon/components';
+import { SITE_TITLE } from '../../consts';
+
+const navLinks = [
+  { href: '#hero',       label: 'Home'       },
+  { href: '#about',      label: 'About'      },
+  { href: '#skills',     label: 'Skills'     },
+  { href: '#projects',   label: 'Projects'   },
+  { href: '#experience', label: 'Experience' },
+  { href: '#contact',    label: 'Contact'    },
+];
+
+const socialLinks = [
+  { href: 'https://github.com/Joshtri',                                          icon: 'simple-icons:github',   label: 'GitHub'   },
+  { href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/', icon: 'simple-icons:linkedin', label: 'LinkedIn' },
+];
+---
+
+<header class="fixed top-10 left-0 right-0 z-50 px-4 md:px-8 max-w-7xl mx-auto w-full flex items-center justify-between">
+
+  <!-- Logo -->
+  <a href="/" class="text-sm md:text-base font-bold tracking-tight text-white whitespace-nowrap hover:opacity-80 transition-opacity z-10">
+    {SITE_TITLE}
+  </a>
+
+  <!-- Island Navbar -->
+  <div class="md:absolute md:left-1/2 md:-translate-x-1/2 md:top-1/2 md:-translate-y-1/2">
+    <nav class="flex items-center gap-2 md:gap-6 px-3 md:px-6 py-2.5 md:py-3 rounded-full border border-white/10 bg-white/10 backdrop-blur-md shadow-lg">
+
+      <!-- Desktop nav links -->
+      <ul class="hidden md:flex items-center gap-1">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              data-nav={href.slice(1)}
+              class="nav-link px-3 py-1.5 text-sm text-white/70 hover:text-white rounded-full transition-all duration-200"
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Divider (desktop) -->
+      <span class="hidden md:block h-4 w-px bg-white/20"></span>
+
+      <!-- Social icons -->
+      <div class="flex items-center gap-1">
+        {socialLinks.map(({ href, icon, label }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            class="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
+          >
+            <Icon name={icon} class="w-4 h-4" />
+          </a>
+        ))}
+      </div>
+
+      <!-- Divider (mobile, between socials and burger) -->
+      <span class="md:hidden h-4 w-px bg-white/20"></span>
+
+      <!-- Hamburger button (mobile only) -->
+      <button
+        id="menu-toggle"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        class="md:hidden p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
+      >
+        <Icon name="lucide:menu" class="w-5 h-5 burger-open" />
+        <Icon name="lucide:x"    class="w-5 h-5 burger-close hidden" />
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile menu overlay (lives outside <header> so it covers the full viewport) -->
+<div id="mobile-menu" aria-hidden="true">
+
+  <!-- Backdrop -->
+  <div id="menu-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+  <!-- Slide-in panel -->
+  <div id="mobile-panel" class="absolute top-0 right-0 h-full w-72 border-l border-white/10 flex flex-col" style="background: rgba(5,5,18,0.97); backdrop-filter: blur(24px);">
+
+    <!-- Panel header -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-white/8">
+      <span class="text-sm font-bold text-white">{SITE_TITLE}</span>
+      <button
+        id="menu-close"
+        aria-label="Close navigation menu"
+        class="p-1.5 text-white/60 hover:text-white rounded-full hover:bg-white/10 transition-all"
+      >
+        <Icon name="lucide:x" class="w-5 h-5" />
+      </button>
+    </div>
+
+    <!-- Mobile nav links -->
+    <nav class="flex-1 overflow-y-auto px-4 py-6">
+      <ul class="space-y-1">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              data-nav-mobile={href.slice(1)}
+              class="mobile-nav-link flex items-center px-4 py-3 text-base text-white/70 hover:text-white rounded-xl transition-all duration-200"
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Panel footer -->
+    <div class="px-6 py-5 border-t border-white/8">
+      <p class="text-[10px] text-gray-600 uppercase tracking-widest mb-3">Connect</p>
+      <div class="flex items-center gap-2">
+        {socialLinks.map(({ href, icon, label }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            class="flex items-center gap-2 px-3 py-2 text-sm text-white/60 hover:text-white border border-white/10 hover:border-white/25 rounded-xl transition-all"
+          >
+            <Icon name={icon} class="w-4 h-4" />
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Mobile menu ──────────────────────────────────────────────────────────
+  const toggle   = document.getElementById('menu-toggle');
+  const closeBtn = document.getElementById('menu-close');
+  const overlay  = document.getElementById('mobile-menu');
+  const backdrop = document.getElementById('menu-backdrop');
+  const openIcon  = toggle?.querySelector('.burger-open')  as HTMLElement | null;
+  const closeIcon = toggle?.querySelector('.burger-close') as HTMLElement | null;
+
+  function openMenu() {
+    overlay?.classList.add('is-open');
+    toggle?.setAttribute('aria-expanded', 'true');
+    overlay?.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    openIcon?.classList.add('hidden');
+    closeIcon?.classList.remove('hidden');
+  }
+
+  function closeMenu() {
+    overlay?.classList.remove('is-open');
+    toggle?.setAttribute('aria-expanded', 'false');
+    overlay?.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    openIcon?.classList.remove('hidden');
+    closeIcon?.classList.add('hidden');
+  }
+
+  toggle?.addEventListener('click', openMenu);
+  closeBtn?.addEventListener('click', closeMenu);
+  backdrop?.addEventListener('click', closeMenu);
+
+  document.querySelectorAll('.mobile-nav-link').forEach(link =>
+    link.addEventListener('click', closeMenu)
+  );
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  // ── Active nav state on scroll ───────────────────────────────────────────
+  const desktopLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
+  const mobileLinks  = document.querySelectorAll<HTMLAnchorElement>('[data-nav-mobile]');
+  const sections     = Array.from(document.querySelectorAll<HTMLElement>('section[id]'));
+
+  function setActive(id: string) {
+    desktopLinks.forEach(link => {
+      link.classList.toggle('nav-active', link.dataset.nav === id);
+    });
+    mobileLinks.forEach(link => {
+      link.classList.toggle('mobile-nav-active', link.dataset.navMobile === id);
+    });
+  }
+
+  function onScroll() {
+    const threshold = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0]?.id ?? '';
+
+    for (const s of sections) {
+      if (s.offsetTop <= threshold) current = s.id;
+    }
+
+    setActive(current);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  /* ── Mobile overlay ── */
+  #mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  @media (min-width: 768px) {
+    #mobile-menu { display: none; }
+  }
+
+  #mobile-menu.is-open {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+  }
+
+  #mobile-panel {
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #mobile-menu.is-open #mobile-panel {
+    transform: translateX(0);
+  }
+
+  /* ── Desktop active link ── */
+  .nav-link {
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .nav-link.nav-active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* ── Mobile active link ── */
+  .mobile-nav-link {
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .mobile-nav-active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Mobile hover */
+  .mobile-nav-link:not(.mobile-nav-active):hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+</style>

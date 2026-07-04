@@ -1,0 +1,66 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const year = new Date().getFullYear();
+
+const socials = [
+  { href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/', icon: 'simple-icons:linkedin', label: 'LinkedIn' },
+  { href: 'https://github.com/', icon: 'simple-icons:github', label: 'GitHub' },
+  { href: 'https://www.instagram.com/yosryy_lenggu/', icon: 'simple-icons:instagram', label: 'Instagram' },
+  { href: 'https://www.facebook.com', icon: 'simple-icons:facebook', label: 'Facebook' },
+];
+
+const navLinks = [
+  { href: '#hero', label: 'Home' },
+  { href: '#skills', label: 'Skills' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<footer class="bg-gray-950 border-t border-white/6">
+  <div class="max-w-6xl mx-auto px-6 sm:px-10 py-12">
+
+    <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+
+      <!-- Name + role -->
+      <div class="text-center md:text-left">
+        <p class="text-white font-semibold text-sm">Joshtri Lenggu</p>
+        <p class="text-gray-500 text-xs mt-0.5">Full-Stack Developer · North Jakarta</p>
+      </div>
+
+      <!-- Nav links -->
+      <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+        {navLinks.map(({ href, label }) => (
+          <a href={href} class="text-xs text-gray-500 hover:text-white transition-colors">
+            {label}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Social icons -->
+      <div class="flex gap-4">
+        {socials.map(({ href, icon, label }) => (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            class="text-gray-600 hover:text-white transition-colors"
+          >
+            <Icon name={icon} class="w-4 h-4" />
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Divider + copyright -->
+    <div class="mt-8 pt-6 border-t border-white/6 text-center">
+      <p class="text-xs text-gray-600">
+        &copy; {year} Arpakhsad Joshtri Sugiatma Lenggu. Built with Astro.
+      </p>
+    </div>
+
+  </div>
+</footer>

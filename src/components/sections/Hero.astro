@@ -1,0 +1,149 @@
+---
+import { Icon } from 'astro-icon/components';
+import Heading from '@/components/ui/Heading.astro';
+import Paragraph from '@/components/ui/Paragraph.astro';
+import Href from '@/components/ui/Href.astro';
+import Button from '@/components/ui/Button.astro';
+
+const roles = ['Full-Stack Developer', 'Frontend Engineer', 'Backend Engineer'];
+const images = ['/profile-1.jpg', '/profile-2.jpg'];
+
+const socialLinks = [
+  {
+    href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/',
+    icon: 'simple-icons:linkedin',
+    label: 'LinkedIn',
+  },
+  {
+    href: 'https://www.facebook.com',
+    icon: 'simple-icons:facebook',
+    label: 'Facebook',
+  },
+  {
+    href: 'https://www.instagram.com/yosryy_lenggu/',
+    icon: 'simple-icons:instagram',
+    label: 'Instagram',
+  },
+];
+---
+
+<section id="hero" class="relative w-full min-h-screen overflow-hidden">
+  <div class="absolute inset-0 "></div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex flex-col lg:flex-row items-center justify-center min-h-screen px-6 sm:px-12 lg:px-24 py-24 text-white gap-12 lg:gap-20">
+
+    <!-- Profile Image -->
+    <div class="flex flex-col items-center gap-3">
+      <div class="rounded-full overflow-hidden w-40 h-40 sm:w-52 sm:h-52 lg:w-60 lg:h-60 ring-2 ring-white/20">
+        <img
+          id="profile-img"
+          src={images[0]}
+          alt="Joshtri Lenggu"
+          class="object-cover w-full h-full"
+        />
+      </div>
+
+      <div class="flex gap-2">
+        {images.map((_, i) => (
+          <button
+            data-dot={i}
+            aria-label={`Photo ${i + 1}`}
+            class={`h-2 rounded-full transition-all duration-300 ${i === 0 ? 'w-5 bg-blue-400' : 'w-2 bg-white/30'}`}
+          />
+        ))}
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="text-center lg:text-left max-w-lg">
+      <Paragraph size="sm" color="muted" class="mb-2">
+        Based in North Jakarta, Indonesia
+      </Paragraph>
+
+      <Heading level="h1" class="mb-3">
+        Hi, I'm <span class="text-blue-400">Joshtri Lenggu</span>
+      </Heading>
+
+      <Paragraph size="lg" color="subtle" class="mb-2">
+        <span id="role-text">{roles[0]}</span>
+      </Paragraph>
+
+      <Paragraph color="muted" class="mb-8">
+        I build web applications — from UI to API. I like writing code that's clean,
+        works well, and doesn't break at 3am.
+      </Paragraph>
+
+      <!-- Social links -->
+      <div class="flex justify-center lg:justify-start gap-3 mb-8">
+        {socialLinks.map(({ href, icon, label }) => (
+          <Href
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            class="text-white/50 hover:text-white transition-colors"
+          >
+            <Icon name={icon} class="w-5 h-5" />
+          </Href>
+        ))}
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-3">
+        <Button href="mailto:stuffofyos1516@gmail.com" variant="primary">
+          <Icon name="lucide:mail" class="w-4 h-4" />
+          Contact Me
+        </Button>
+        <Button href="/cv.pdf" variant="outline" download>
+          <Icon name="lucide:download" class="w-4 h-4" />
+          Download CV
+        </Button>
+        <a
+          href="#projects"
+          class="flex items-center justify-center gap-2 px-6 py-2.5 text-white/60 hover:text-white text-sm font-medium transition-colors"
+        >
+          View My Work
+          <Icon name="lucide:arrow-down" class="w-4 h-4" />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ roles, images }}>
+  import('/src/utils/imageSwitcher.ts').then(m => m.initImageSwitcher(images)).catch(() => {
+    // fallback inline if module fails
+    const imgEl = document.getElementById('profile-img');
+    const dots = document.querySelectorAll('[data-dot]');
+    if (!imgEl) return;
+    imgEl.style.transition = 'opacity 0.2s ease';
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const i = Number(dot.dataset.dot);
+        imgEl.style.opacity = '0';
+        setTimeout(() => { imgEl.src = images[i]; imgEl.style.opacity = '1'; }, 200);
+        dots.forEach((d, j) => {
+          d.className = j === i
+            ? 'h-2 w-5 rounded-full transition-all duration-300 bg-blue-400'
+            : 'h-2 w-2 rounded-full transition-all duration-300 bg-white/30';
+        });
+      });
+    });
+  });
+
+  // Role cycling
+  const roleEl = document.getElementById('role-text');
+  if (roleEl) {
+    roleEl.style.transition = 'opacity 0.3s ease';
+    let roleIndex = 0;
+    setInterval(() => {
+      roleEl.style.opacity = '0';
+      setTimeout(() => {
+        roleIndex = (roleIndex + 1) % roles.length;
+        roleEl.textContent = roles[roleIndex];
+        roleEl.style.opacity = '1';
+      }, 300);
+    }, 2500);
+  }
+</script>

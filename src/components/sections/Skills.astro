@@ -1,0 +1,224 @@
+---
+import { Icon } from 'astro-icon/components';
+import Heading from '@/components/ui/Heading.astro';
+import Paragraph from '@/components/ui/Paragraph.astro';
+
+interface Skill {
+  name: string
+  icon: string
+  color: string
+}
+
+import { fetchApi } from '@/utils/api'
+
+let skills: Skill[] = []
+skills = await fetchApi<Skill[]>('/api/skills') ?? []
+
+if (skills.length === 0) {
+  skills = [
+    { name: 'React',      icon: 'simple-icons:react',       color: '#61DAFB' },
+    { name: 'TypeScript', icon: 'simple-icons:typescript',  color: '#3178C6' },
+    { name: 'Next.js',    icon: 'simple-icons:nextdotjs',   color: '#E2E8F0' },
+    { name: 'Tailwind',   icon: 'simple-icons:tailwindcss', color: '#06B6D4' },
+    { name: 'Vue.js',     icon: 'simple-icons:vuedotjs',    color: '#42B883' },
+    { name: 'Nuxt.js',    icon: 'simple-icons:nuxtdotjs',   color: '#00DC82' },
+    { name: 'Node.js',    icon: 'simple-icons:nodedotjs',   color: '#339933' },
+    { name: 'Express',    icon: 'simple-icons:express',     color: '#E2E8F0' },
+    { name: 'Laravel',    icon: 'simple-icons:laravel',     color: '#FF2D20' },
+    { name: 'PHP',        icon: 'simple-icons:php',         color: '#777BB4' },
+    { name: 'MongoDB',    icon: 'simple-icons:mongodb',     color: '#47A248' },
+    { name: 'PostgreSQL', icon: 'simple-icons:postgresql',  color: '#4169E1' },
+    { name: 'MySQL',      icon: 'simple-icons:mysql',       color: '#4479A1' },
+    { name: 'Git',        icon: 'simple-icons:git',         color: '#F05032' },
+    { name: 'Docker',     icon: 'simple-icons:docker',      color: '#2496ED' },
+    { name: 'Astro',      icon: 'simple-icons:astro',       color: '#FF5D01' },
+  ]
+}
+
+const half = Math.ceil(skills.length / 2);
+const row1 = skills.slice(0, half);
+const row2 = skills.slice(half);
+---
+
+<section id="skills" class="relative">
+  <div class="max-w-7xl mx-auto px-6 sm:px-10">
+    <div class="flex flex-col md:grid md:grid-cols-[380px_1fr] md:items-start">
+
+      <!-- LEFT — sticky text panel -->
+      <div class="md:sticky md:top-[28vh] py-24 md:pt-[23vh] md:pb-40 shrink-0 z-10">
+        <div id="skills-text-inner">
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">
+            <span class="w-4 h-px bg-blue-400/60"></span>
+            Tech Stack
+            <span class="w-4 h-px bg-blue-400/60"></span>
+          </span>
+
+          <Heading level="h2" class="text-white mb-3 leading-snug drop-shadow-[0_0_24px_rgba(100,150,255,0.25)]">
+            Technologies<br />I Work With
+          </Heading>
+
+          <Paragraph color="muted" class="max-w-xs">
+            From frontend to backend — these are the tools I use to build reliable,
+            production-ready web applications.
+          </Paragraph>
+
+          <div class="flex flex-wrap gap-3 mt-6">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-gray-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+              {skills.length}+ Technologies
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-gray-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+              Full-Stack
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — marquee rows, breaks out to the right viewport edge -->
+      <div
+        class="overflow-hidden -mr-6 sm:-mr-10 py-24 md:pt-[23vh] md:pb-40 flex flex-col gap-6"
+        style="mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%);"
+      >
+        <!-- Row 1 — scrolls left -->
+        <div class="skill-row">
+          <div class="marquee-left flex gap-5 w-max">
+            {[...row1, ...row1].map((skill) => (
+              <div class="group flex flex-col items-center w-[112px] h-28 shrink-0 cursor-default">
+                <div class="flex flex-1 items-center justify-center w-full">
+                  <div
+                    class="skill-orb relative w-16 h-16 rounded-full bg-white/[0.03] flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                    style={`--gc: ${skill.color}`}
+                  >
+                    <Icon name={skill.icon} class="w-9 h-9 transition-transform duration-300 group-hover:scale-110" style={`color:${skill.color}`} />
+                  </div>
+                </div>
+                <div class="h-6 w-full flex items-center justify-center shrink-0">
+                  <span class="text-xs text-gray-500 group-hover:text-gray-200 text-center leading-none transition-colors duration-200 w-full truncate px-1">
+                    {skill.name}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Row 2 — scrolls right -->
+        <div class="skill-row skill-row--delay">
+          <div class="marquee-right flex gap-5 w-max">
+            {[...row2, ...row2].map((skill) => (
+              <div class="group flex flex-col items-center w-[112px] h-28 shrink-0 cursor-default">
+                <div class="flex flex-1 items-center justify-center w-full">
+                  <div
+                    class="skill-orb relative w-16 h-16 rounded-full bg-white/[0.03] flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                    style={`--gc: ${skill.color}`}
+                  >
+                    <Icon name={skill.icon} class="w-9 h-9 transition-transform duration-300 group-hover:scale-110" style={`color:${skill.color}`} />
+                  </div>
+                </div>
+                <div class="h-6 w-full flex items-center justify-center shrink-0">
+                  <span class="text-xs text-gray-500 group-hover:text-gray-200 text-center leading-none transition-colors duration-200 w-full truncate px-1">
+                    {skill.name}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  const section  = document.getElementById('skills') as HTMLElement | null;
+  const textEl   = document.getElementById('skills-text-inner') as HTMLElement | null;
+
+  // --- Parallax: text drifts at 15% of scroll speed (appears to float) ---
+  if (section && textEl) {
+    const onScroll = () => {
+      const rect = section.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      // Offset is proportional to how far the section center is from the viewport center
+      const center  = rect.top + rect.height / 2;
+      const vCenter = window.innerHeight / 2;
+      const drift   = (center - vCenter) * 0.12;
+      textEl.style.transform = `translateY(${drift}px)`;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // --- Scale / fade-in as rows enter the viewport ---
+  const rows = document.querySelectorAll<HTMLElement>('#skills .skill-row');
+  const rowIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('skill-row--in');
+        rowIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  rows.forEach(row => rowIO.observe(row));
+</script>
+
+<style>
+  /* Colored glow ring on hover — uses --gc CSS variable per icon */
+  .skill-orb::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 9999px;
+    opacity: 0;
+    /* Fallback for browsers without color-mix */
+    box-shadow: 0 0 18px 4px rgba(150,150,255,0.35);
+    transition: opacity 0.3s ease;
+  }
+  @supports (color: color-mix(in srgb, red 50%, blue)) {
+    .skill-orb::after {
+      box-shadow:
+        0 0 18px 5px color-mix(in srgb, var(--gc) 50%, transparent),
+        inset 0 0 10px color-mix(in srgb, var(--gc) 18%, transparent);
+    }
+  }
+  .group:hover .skill-orb::after {
+    opacity: 1;
+  }
+
+  /* Scale-in animation for marquee rows */
+  .skill-row {
+    opacity: 0;
+    transform: scale(0.93) translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+  .skill-row--delay {
+    transition-delay: 0.18s;
+  }
+  .skill-row--in {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* Marquee keyframes */
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes scroll-right {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+  }
+
+  .marquee-left {
+    animation: scroll-left 32s linear infinite;
+  }
+  .marquee-right {
+    animation: scroll-right 32s linear infinite;
+  }
+  .marquee-left:hover,
+  .marquee-right:hover {
+    animation-play-state: paused;
+  }
+</style>

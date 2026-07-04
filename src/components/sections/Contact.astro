@@ -1,0 +1,142 @@
+---
+import { Icon } from 'astro-icon/components';
+import Heading from '@/components/ui/Heading.astro';
+import Paragraph from '@/components/ui/Paragraph.astro';
+
+const contactLinks = [
+  {
+    label: 'Send Email',
+    href: 'mailto:stuffofyos1516@gmail.com',
+    icon: 'lucide:mail',
+    description: 'stuffofyos1516@gmail.com',
+    color: 'hover:border-blue-500/40 hover:bg-blue-500/5',
+    iconColor: 'text-blue-400',
+  },
+  {
+    label: 'WhatsApp',
+    href: 'https://wa.me/6285298389192',
+    icon: 'simple-icons:whatsapp',
+    description: '+62 852-9838-9192',
+    color: 'hover:border-green-500/40 hover:bg-green-500/5',
+    iconColor: 'text-green-400',
+    external: true,
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/',
+    icon: 'simple-icons:linkedin',
+    description: 'Arpakhsad Joshtri S. Lenggu',
+    color: 'hover:border-blue-400/40 hover:bg-blue-400/5',
+    iconColor: 'text-blue-300',
+    external: true,
+  },
+  {
+    label: 'GitHub',
+    href: 'https://github.com/Joshtri',
+    icon: 'simple-icons:github',
+    description: '@Joshtri',
+    color: 'hover:border-white/30 hover:bg-white/5',
+    iconColor: 'text-white',
+    external: true,
+  },
+];
+---
+
+<section id="contact" class="relative overflow-hidden py-24">
+
+  <div class="relative z-10 max-w-2xl mx-auto px-6 sm:px-10 text-center">
+
+    <!-- Header -->
+    <div class="contact-head">
+      <span class="text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3 block">
+        Get In Touch
+      </span>
+      <Heading level="h2" class="text-white mb-4">
+        Let's Work Together
+      </Heading>
+      <Paragraph color="muted" class="mb-12 max-w-md mx-auto">
+        Have a project in mind or just want to say hi? My inbox is always open.
+      </Paragraph>
+    </div>
+
+    <!-- Profile photo -->
+    <div class="contact-avatar flex justify-center mb-10">
+      <div class="relative">
+        <div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-white/10">
+          <img src="/profile-1.jpg" alt="Joshtri Lenggu" class="w-full h-full object-cover" />
+        </div>
+        <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 border-2 border-black flex items-center justify-center">
+          <span class="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Contact cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+      {contactLinks.map(({ label, href, icon, description, color, iconColor, external }, i) => (
+        <a
+          href={href}
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noopener noreferrer' : undefined}
+          data-contact-card={i}
+          class={`contact-card flex items-center gap-4 p-4 rounded-xl border border-white/8 bg-white/3 transition-all duration-200 group ${color}`}
+        >
+          <div class={`w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0 ${iconColor}`}>
+            <Icon name={icon} class="w-5 h-5" />
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-white">{label}</p>
+            <p class="text-xs text-gray-500 truncate">{description}</p>
+          </div>
+          <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-white/20 group-hover:text-white/60 ml-auto shrink-0 transition-colors" />
+        </a>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const BASE_DELAY = 0;
+  const staggered = [
+    { sel: '#contact .contact-head',   delay: 0    },
+    { sel: '#contact .contact-avatar', delay: 0.12 },
+    { sel: '#contact .contact-card',   delay: 0    },
+  ];
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('contact--in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  // Head + avatar
+  ['.contact-head', '.contact-avatar'].forEach((sel, i) => {
+    const el = document.querySelector<HTMLElement>(`#contact ${sel}`);
+    if (el) { el.style.transitionDelay = `${i * 0.12}s`; io.observe(el); }
+  });
+
+  // Cards with stagger
+  document.querySelectorAll<HTMLElement>('#contact .contact-card').forEach((card, i) => {
+    card.style.transitionDelay = `${0.24 + i * 0.08}s`;
+    io.observe(card);
+  });
+</script>
+
+<style>
+  .contact-head,
+  .contact-avatar,
+  .contact-card {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+
+  .contact--in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

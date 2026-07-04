@@ -1,0 +1,260 @@
+---
+import { Icon } from 'astro-icon/components';
+import Heading from '@/components/ui/Heading.astro';
+import Paragraph from '@/components/ui/Paragraph.astro';
+
+interface ApiWorkExperience {
+  _id: string;
+  role: string;
+  company: string;
+  companyUrl?: string;
+  startDate: string;
+  endDate?: string;
+  current?: boolean;
+  description: string;
+  tags: string[];
+}
+
+interface ApiEducation {
+  _id: string;
+  degree: string;
+  school: string;
+  startYear: number;
+  endYear?: number;
+  gpa?: string;
+  description: string;
+}
+
+function formatWorkPeriod(startDate: string, endDate?: string, current?: boolean): string {
+  const start = new Date(startDate);
+  const startStr = start.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  if (current) return `${startStr} – Present`;
+  if (!endDate) return startStr;
+  const end = new Date(endDate);
+  const endStr = end.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  return `${startStr} – ${endStr}`;
+}
+
+function formatEduPeriod(startYear: number, endYear?: number): string {
+  return endYear ? `${startYear} – ${endYear}` : `${startYear}`;
+}
+
+let workExperience: ApiWorkExperience[] = [];
+let education: ApiEducation[] = [];
+
+import { fetchApi } from '@/utils/api';
+
+const [workData, eduData] = await Promise.all([
+  fetchApi<ApiWorkExperience[]>('/api/work-experiences'),
+  fetchApi<ApiEducation[]>('/api/educations'),
+]);
+workExperience = workData ?? [];
+education      = eduData  ?? [];
+
+if (workExperience.length === 0) {
+  workExperience = [
+    {
+      _id: '1',
+      role: 'Full-Stack Developer',
+      company: 'PT. Teknologi Nusantara',
+      companyUrl: '#',
+      startDate: '2023-01-01',
+      current: true,
+      description: 'Building and maintaining full-stack web applications for enterprise clients. Focus on React frontend, Node.js/Express backend, and MongoDB database architecture.',
+      tags: ['React', 'Node.js', 'MongoDB', 'TypeScript', 'REST API'],
+    },
+    {
+      _id: '2',
+      role: 'Junior Web Developer',
+      company: 'CV. Digital Kreasi',
+      startDate: '2022-03-01',
+      endDate: '2022-12-31',
+      description: 'Developed and maintained client websites using Laravel and Vue.js. Collaborated with the design team to implement pixel-perfect UIs and integrated third-party APIs.',
+      tags: ['Laravel', 'Vue.js', 'MySQL', 'PHP', 'CSS'],
+    },
+    {
+      _id: '3',
+      role: 'Freelance Web Developer',
+      company: 'Self-employed',
+      startDate: '2020-06-01',
+      endDate: '2022-02-28',
+      description: 'Delivered custom websites and web apps for small businesses and individuals — from landing pages to full CRUD applications with user authentication.',
+      tags: ['PHP', 'JavaScript', 'MySQL', 'Bootstrap', 'jQuery'],
+    },
+  ];
+}
+
+if (education.length === 0) {
+  education = [
+    {
+      _id: '1',
+      degree: 'Bachelor of Computer Science',
+      school: 'Universitas Negeri Jakarta',
+      startYear: 2018,
+      endYear: 2022,
+      gpa: '3.62',
+      description: 'Studied software engineering, algorithms, data structures, and web technologies. Final project: a Government Document Management System built with Laravel and MySQL.',
+    },
+  ];
+}
+
+const codingSince   = 2020;
+const currentYear   = new Date().getFullYear();
+const yearsOfCoding = currentYear - codingSince;
+---
+
+<section id="experience" class="relative overflow-hidden py-24">
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 sm:px-10">
+
+    <!-- Header -->
+    <div class="exp-header text-center mb-14">
+      <span class="text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3 block">
+        Background
+      </span>
+      <Heading level="h2" class="text-white mb-3">
+        Experience & Education
+      </Heading>
+      <Paragraph color="muted" class="max-w-lg mx-auto">
+        {yearsOfCoding}+ years writing code — from college assignments to production systems.
+      </Paragraph>
+    </div>
+
+    <!-- Two columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+      <!-- LEFT — Work Experience -->
+      <div class="exp-work">
+        <div class="flex items-center gap-2 mb-8">
+          <Icon name="lucide:briefcase" class="w-4 h-4 text-blue-400" />
+          <h3 class="text-sm font-semibold text-white uppercase tracking-widest">Work</h3>
+        </div>
+
+        <div class="relative">
+          <div class="absolute left-[7px] top-2 bottom-2 w-px bg-white/10"></div>
+
+          <div class="space-y-8">
+            {workExperience.map((item) => (
+              <div class="relative pl-8">
+                <div class={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 ${item.current ? 'bg-blue-500 border-blue-400' : 'bg-gray-700 border-gray-500'}`}></div>
+
+                <div class="rounded-xl border border-white/8 bg-white/4 p-5 hover:border-white/15 transition-colors duration-200">
+                  <div class="flex items-start justify-between gap-3 mb-1">
+                    <h4 class="text-sm font-semibold text-white leading-snug">{item.role}</h4>
+                    {item.current && (
+                      <span class="shrink-0 flex items-center gap-1 text-xs text-green-400 bg-green-400/10 border border-green-400/20 px-2 py-0.5 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                        Now
+                      </span>
+                    )}
+                  </div>
+
+                  <div class="flex items-center gap-2 mb-3">
+                    {item.companyUrl && item.companyUrl !== '#' ? (
+                      <a href={item.companyUrl} target="_blank" rel="noopener noreferrer"
+                        class="text-xs text-blue-400 hover:text-blue-300 transition-colors">
+                        {item.company}
+                      </a>
+                    ) : (
+                      <span class="text-xs text-gray-400">{item.company}</span>
+                    )}
+                    <span class="text-white/20">·</span>
+                    <span class="text-xs text-gray-500">
+                      {formatWorkPeriod(item.startDate, item.endDate, item.current)}
+                    </span>
+                  </div>
+
+                  <p class="text-xs text-gray-400 leading-relaxed mb-4">{item.description}</p>
+
+                  <div class="flex flex-wrap gap-1.5">
+                    {(item.tags ?? []).map((tag) => (
+                      <span class="text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/8 text-gray-400">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT — Education -->
+      <div class="exp-edu">
+        <div class="flex items-center gap-2 mb-8">
+          <Icon name="lucide:graduation-cap" class="w-4 h-4 text-yellow-400" />
+          <h3 class="text-sm font-semibold text-white uppercase tracking-widest">Education</h3>
+        </div>
+
+        <div class="relative">
+          <div class="absolute left-[7px] top-2 bottom-2 w-px bg-white/10"></div>
+
+          <div class="space-y-8">
+            {education.map((item) => (
+              <div class="relative pl-8">
+                <div class="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 bg-yellow-500/30 border-yellow-500/60"></div>
+
+                <div class="rounded-xl border border-white/8 bg-white/4 p-5 hover:border-white/15 transition-colors duration-200">
+                  <h4 class="text-sm font-semibold text-white mb-1">{item.degree}</h4>
+
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="text-xs text-gray-400">{item.school}</span>
+                    <span class="text-white/20">·</span>
+                    <span class="text-xs text-gray-500">
+                      {formatEduPeriod(item.startYear, item.endYear)}
+                    </span>
+                    {item.gpa && (
+                      <>
+                        <span class="text-white/20">·</span>
+                        <span class="text-xs text-yellow-400/80">GPA {item.gpa}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <p class="text-xs text-gray-400 leading-relaxed">{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  const targets = document.querySelectorAll<HTMLElement>(
+    '#experience .exp-header, #experience .exp-work, #experience .exp-edu'
+  );
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('exp--in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  targets.forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.12}s`;
+    io.observe(el);
+  });
+</script>
+
+<style>
+  .exp-header,
+  .exp-work,
+  .exp-edu {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+
+  .exp--in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

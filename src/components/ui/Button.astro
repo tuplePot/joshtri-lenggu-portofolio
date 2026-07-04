@@ -1,0 +1,51 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  download?: boolean;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+// Base styles
+const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-300 active:scale-95 disabled:pointer-events-none disabled:opacity-50 cursor-pointer';
+
+// Variant styles
+const variants = {
+  primary: 'bg-blue-500 hover:bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:shadow-blue-500/30',
+  secondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-sm',
+  outline: 'border border-white/20 hover:border-white/40 text-white/80 hover:text-white hover:bg-white/5',
+  ghost: 'hover:bg-white/10 text-white/80 hover:text-white',
+};
+
+// Size styles
+const sizes = {
+  sm: 'px-4 py-2 text-xs',
+  md: 'px-6 py-2.5 text-sm',
+  lg: 'px-8 py-3 text-base',
+};
+
+const classes = [baseStyles, variants[variant], sizes[size], className].join(' ');
+---
+
+{
+  href ? (
+    <a href={href} class={classes} {...rest as HTMLAttributes<'a'>}>
+      <slot />
+    </a>
+  ) : (
+    <button class={classes} {...rest as HTMLAttributes<'button'>}>
+      <slot />
+    </button>
+  )
+}

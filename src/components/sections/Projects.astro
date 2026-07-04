@@ -1,0 +1,177 @@
+---
+import { Icon } from 'astro-icon/components';
+import Heading from '@/components/ui/Heading.astro';
+import Paragraph from '@/components/ui/Paragraph.astro';
+import ProjectCard from '@/components/ui/ProjectCard.astro';
+import type { Project } from '@/components/ui/ProjectCard.astro';
+
+import { fetchApi } from '@/utils/api';
+
+let projects: Project[] = [];
+projects = await fetchApi<Project[]>('/api/projects') ?? [];
+
+if (projects.length === 0) {
+  projects = [
+    {
+      title: 'Government E-Service Platform',
+      description: 'A digital service platform for government administration — handling citizen requests, document management, and workflow approvals at the municipal level.',
+      skillIds: [
+        { _id: 'r',  name: 'React',      icon: 'simple-icons:react',      color: '#61DAFB' },
+        { _id: 'n',  name: 'Node.js',    icon: 'simple-icons:nodedotjs',  color: '#339933' },
+        { _id: 'm',  name: 'MongoDB',    icon: 'simple-icons:mongodb',    color: '#47A248' },
+        { _id: 'ts', name: 'TypeScript', icon: 'simple-icons:typescript', color: '#3178C6' },
+      ],
+    },
+    {
+      title: 'HR Management System',
+      description: 'A web-based HR tool for managing employee records, attendance, leave requests, and payroll — built for a mid-size organisation.',
+      skillIds: [
+        { _id: 'l',   name: 'Laravel', icon: 'simple-icons:laravel',     color: '#FF2D20' },
+        { _id: 'sql', name: 'MySQL',   icon: 'simple-icons:mysql',       color: '#4479A1' },
+        { _id: 'v',   name: 'Vue.js',  icon: 'simple-icons:vuedotjs',    color: '#42B883' },
+      ],
+    },
+    {
+      title: 'Developer Portfolio',
+      description: 'This portfolio — built with Astro and Tailwind CSS v4, featuring an animated galaxy canvas, sticky scroll effects, and responsive section layout.',
+      skillIds: [
+        { _id: 'a',   name: 'Astro',    icon: 'simple-icons:astro',       color: '#FF5D01' },
+        { _id: 'tw',  name: 'Tailwind', icon: 'simple-icons:tailwindcss', color: '#06B6D4' },
+        { _id: 'ts2', name: 'TypeScript', icon: 'simple-icons:typescript', color: '#3178C6' },
+      ],
+      link: 'https://github.com/Joshtri',
+    },
+    {
+      title: 'Inventory & POS System',
+      description: 'A point-of-sale and inventory management system for a local retail business — real-time stock tracking, sales reports, and receipt printing.',
+      skillIds: [
+        { _id: 'l2',  name: 'Laravel',    icon: 'simple-icons:laravel',    color: '#FF2D20' },
+        { _id: 'vue2', name: 'Vue.js',    icon: 'simple-icons:vuedotjs',   color: '#42B883' },
+        { _id: 'my2', name: 'MySQL',      icon: 'simple-icons:mysql',      color: '#4479A1' },
+      ],
+    },
+    {
+      title: 'Task & Project Tracker',
+      description: 'A lightweight project management tool with boards, task assignments, deadlines, and team collaboration — inspired by the simplicity of Trello.',
+      skillIds: [
+        { _id: 'r2', name: 'React',      icon: 'simple-icons:react',       color: '#61DAFB' },
+        { _id: 'e',  name: 'Express',    icon: 'simple-icons:express',     color: '#E2E8F0' },
+        { _id: 'pg', name: 'PostgreSQL', icon: 'simple-icons:postgresql',  color: '#4169E1' },
+      ],
+    },
+    {
+      title: 'API Gateway & Auth Service',
+      description: 'A central authentication and API gateway service with JWT, refresh tokens, role-based access control, and rate limiting for microservice architecture.',
+      skillIds: [
+        { _id: 'nd', name: 'Node.js',    icon: 'simple-icons:nodedotjs',  color: '#339933' },
+        { _id: 'dc', name: 'Docker',     icon: 'simple-icons:docker',     color: '#2496ED' },
+        { _id: 'mg', name: 'MongoDB',    icon: 'simple-icons:mongodb',    color: '#47A248' },
+      ],
+    },
+  ];
+}
+---
+
+<section id="projects" class="relative py-24 overflow-hidden">
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10">
+
+    <!-- Header -->
+    <div class="proj-header flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+      <div>
+        <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">
+          <span class="w-4 h-px bg-blue-400/60"></span>
+          My Work
+          <span class="w-4 h-px bg-blue-400/60"></span>
+        </span>
+
+        <Heading level="h2" class="text-white drop-shadow-[0_0_24px_rgba(100,150,255,0.25)]">
+          Selected Projects
+        </Heading>
+
+        <Paragraph color="muted" class="mt-2 max-w-md">
+          A few things I've built — from government platforms to personal experiments.
+        </Paragraph>
+      </div>
+
+      <a
+        href="https://github.com/Joshtri"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-gray-400 hover:text-white hover:border-blue-400/40 hover:bg-white/10 transition-all duration-200 shrink-0"
+      >
+        <Icon name="simple-icons:github" class="w-4 h-4" />
+        View GitHub
+        <Icon name="lucide:arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+      </a>
+    </div>
+
+    <!-- Scrollable grid -->
+    <div class="proj-grid relative">
+      <div class="projects-scroll max-h-[660px] overflow-y-auto pr-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-6">
+          {projects.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Project count -->
+    <p class="proj-count text-center text-xs text-gray-600 mt-5">
+      {projects.length} project{projects.length !== 1 ? 's' : ''} — scroll to see all
+    </p>
+
+  </div>
+
+</section>
+
+<script>
+  const targets = [
+    ...document.querySelectorAll<HTMLElement>('.proj-header, .proj-grid, .proj-count'),
+  ];
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('proj--in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  targets.forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.1}s`;
+    io.observe(el);
+  });
+</script>
+
+<style>
+  .proj-header,
+  .proj-grid,
+  .proj-count {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .proj--in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .projects-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+
+  .projects-scroll::-webkit-scrollbar { width: 3px; }
+  .projects-scroll::-webkit-scrollbar-track { background: transparent; }
+  .projects-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+  }
+  .projects-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 150, 255, 0.25);
+  }
+</style>
