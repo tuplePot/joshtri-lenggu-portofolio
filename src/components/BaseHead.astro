@@ -16,6 +16,17 @@ const ogImageURL = new URL(ogImage, Astro.url).toString();
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
+
+<!-- i18n: apply saved language before first paint to avoid content flash -->
+<script is:inline>
+  (function () {
+    var lang = 'en';
+    try { lang = localStorage.getItem('lang') || 'en'; } catch (e) {}
+    if (lang !== 'en' && lang !== 'id') lang = 'en';
+    document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.setAttribute('lang', lang);
+  })();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />

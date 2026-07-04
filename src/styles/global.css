@@ -4,3 +4,10 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── i18n language toggle ─────────────────────────────────────────────
+   Both language variants are rendered in the HTML; the active one is
+   chosen by the data-lang attribute on <html> (default: en). */
+html[data-lang="en"] .i18n-id { display: none; }
+html:not([data-lang="id"]) .i18n-id { display: none; }
+html[data-lang="id"] .i18n-en { display: none; }
+

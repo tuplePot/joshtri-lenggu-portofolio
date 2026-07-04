@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher.astro';
 import { SITE_TITLE } from '../../consts';
 
 const navLinks = [
@@ -61,6 +62,14 @@ const socialLinks = [
         ))}
       </div>
 
+      <!-- Divider (desktop, between socials and language switcher) -->
+      <span class="hidden md:block h-4 w-px bg-white/20"></span>
+
+      <!-- Language switcher (desktop only — mobile version lives in the panel) -->
+      <div class="hidden md:block">
+        <LanguageSwitcher />
+      </div>
+
       <!-- Divider (mobile, between socials and burger) -->
       <span class="md:hidden h-4 w-px bg-white/20"></span>
 
@@ -118,6 +127,10 @@ const socialLinks = [
 
     <!-- Panel footer -->
     <div class="px-6 py-5 border-t border-white/8">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-[10px] text-gray-600 uppercase tracking-widest">Language</p>
+        <LanguageSwitcher />
+      </div>
       <p class="text-[10px] text-gray-600 uppercase tracking-widest mb-3">Connect</p>
       <div class="flex items-center gap-2">
         {socialLinks.map(({ href, icon, label }) => (
