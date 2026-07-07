@@ -5,7 +5,8 @@ import Paragraph from '@/components/ui/Paragraph.astro';
 
 const contactLinks = [
   {
-    label: 'Send Email',
+    labelEn: 'Send Email',
+    labelId: 'Kirim Email',
     href: 'mailto:stuffofyos1516@gmail.com',
     icon: 'lucide:mail',
     description: 'stuffofyos1516@gmail.com',
@@ -13,7 +14,8 @@ const contactLinks = [
     iconColor: 'text-blue-400',
   },
   {
-    label: 'WhatsApp',
+    labelEn: 'WhatsApp',
+    labelId: 'WhatsApp',
     href: 'https://wa.me/6285298389192',
     icon: 'simple-icons:whatsapp',
     description: '+62 852-9838-9192',
@@ -22,7 +24,8 @@ const contactLinks = [
     external: true,
   },
   {
-    label: 'LinkedIn',
+    labelEn: 'LinkedIn',
+    labelId: 'LinkedIn',
     href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/',
     icon: 'simple-icons:linkedin',
     description: 'Arpakhsad Joshtri S. Lenggu',
@@ -31,7 +34,8 @@ const contactLinks = [
     external: true,
   },
   {
-    label: 'GitHub',
+    labelEn: 'GitHub',
+    labelId: 'GitHub',
     href: 'https://github.com/Joshtri',
     icon: 'simple-icons:github',
     description: '@Joshtri',
@@ -49,13 +53,16 @@ const contactLinks = [
     <!-- Header -->
     <div class="contact-head">
       <span class="text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3 block">
-        Get In Touch
+        <span class="i18n-en">Get In Touch</span>
+        <span class="i18n-id">Hubungi Saya</span>
       </span>
       <Heading level="h2" class="text-white mb-4">
-        Let's Work Together
+        <span class="i18n-en">Let's Work Together</span>
+        <span class="i18n-id">Mari Bekerja Sama</span>
       </Heading>
       <Paragraph color="muted" class="mb-12 max-w-md mx-auto">
-        Have a project in mind or just want to say hi? My inbox is always open.
+        <span class="i18n-en">Have a project in mind or just want to say hi? My inbox is always open.</span>
+        <span class="i18n-id">Punya proyek di benak Anda atau sekadar ingin menyapa? Kotak masuk saya selalu terbuka.</span>
       </Paragraph>
     </div>
 
@@ -73,7 +80,7 @@ const contactLinks = [
 
     <!-- Contact cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-      {contactLinks.map(({ label, href, icon, description, color, iconColor, external }, i) => (
+      {contactLinks.map(({ labelEn, labelId, href, icon, description, color, iconColor, external }, i) => (
         <a
           href={href}
           target={external ? '_blank' : undefined}
@@ -85,7 +92,10 @@ const contactLinks = [
             <Icon name={icon} class="w-5 h-5" />
           </div>
           <div class="min-w-0">
-            <p class="text-sm font-medium text-white">{label}</p>
+            <p class="text-sm font-medium text-white">
+              <span class="i18n-en">{labelEn}</span>
+              <span class="i18n-id">{labelId}</span>
+            </p>
             <p class="text-xs text-gray-500 truncate">{description}</p>
           </div>
           <Icon name="lucide:arrow-up-right" class="w-4 h-4 text-white/20 group-hover:text-white/60 ml-auto shrink-0 transition-colors" />
@@ -97,13 +107,6 @@ const contactLinks = [
 </section>
 
 <script>
-  const BASE_DELAY = 0;
-  const staggered = [
-    { sel: '#contact .contact-head',   delay: 0    },
-    { sel: '#contact .contact-avatar', delay: 0.12 },
-    { sel: '#contact .contact-card',   delay: 0    },
-  ];
-
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -113,13 +116,11 @@ const contactLinks = [
     });
   }, { threshold: 0.1 });
 
-  // Head + avatar
   ['.contact-head', '.contact-avatar'].forEach((sel, i) => {
     const el = document.querySelector<HTMLElement>(`#contact ${sel}`);
     if (el) { el.style.transitionDelay = `${i * 0.12}s`; io.observe(el); }
   });
 
-  // Cards with stagger
   document.querySelectorAll<HTMLElement>('#contact .contact-card').forEach((card, i) => {
     card.style.transitionDelay = `${0.24 + i * 0.08}s`;
     io.observe(card);

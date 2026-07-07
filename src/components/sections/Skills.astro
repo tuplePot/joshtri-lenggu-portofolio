@@ -49,23 +49,29 @@ const row2 = skills.slice(half);
         <div id="skills-text-inner">
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">
             <span class="w-4 h-px bg-blue-400/60"></span>
-            Tech Stack
+            <span class="i18n-en">Tech Stack</span>
+            <span class="i18n-id">Teknologi</span>
             <span class="w-4 h-px bg-blue-400/60"></span>
           </span>
 
           <Heading level="h2" class="text-white mb-3 leading-snug drop-shadow-[0_0_24px_rgba(100,150,255,0.25)]">
-            Technologies<br />I Work With
+            <span class="i18n-en">Technologies<br />I Work With</span>
+            <span class="i18n-id">Teknologi<br />yang Saya Gunakan</span>
           </Heading>
 
           <Paragraph color="muted" class="max-w-xs">
-            From frontend to backend — these are the tools I use to build reliable,
-            production-ready web applications.
+            <span class="i18n-en">From frontend to backend — these are the tools I use to build reliable,
+            production-ready web applications.</span>
+            <span class="i18n-id">Dari frontend hingga backend — ini alat yang saya gunakan untuk membangun
+            aplikasi web yang andal dan siap produksi.</span>
           </Paragraph>
 
           <div class="flex flex-wrap gap-3 mt-6">
             <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-gray-400">
               <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-              {skills.length}+ Technologies
+              {skills.length}+
+              <span class="i18n-en">Technologies</span>
+              <span class="i18n-id">Teknologi</span>
             </div>
             <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-gray-400">
               <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
@@ -75,7 +81,7 @@ const row2 = skills.slice(half);
         </div>
       </div>
 
-      <!-- RIGHT — marquee rows, breaks out to the right viewport edge -->
+      <!-- RIGHT — marquee rows -->
       <div
         class="overflow-hidden -mr-6 sm:-mr-10 py-24 md:pt-[23vh] md:pb-40 flex flex-col gap-6"
         style="mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 100%);"
@@ -135,12 +141,10 @@ const row2 = skills.slice(half);
   const section  = document.getElementById('skills') as HTMLElement | null;
   const textEl   = document.getElementById('skills-text-inner') as HTMLElement | null;
 
-  // --- Parallax: text drifts at 15% of scroll speed (appears to float) ---
   if (section && textEl) {
     const onScroll = () => {
       const rect = section.getBoundingClientRect();
       if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-      // Offset is proportional to how far the section center is from the viewport center
       const center  = rect.top + rect.height / 2;
       const vCenter = window.innerHeight / 2;
       const drift   = (center - vCenter) * 0.12;
@@ -150,7 +154,6 @@ const row2 = skills.slice(half);
     onScroll();
   }
 
-  // --- Scale / fade-in as rows enter the viewport ---
   const rows = document.querySelectorAll<HTMLElement>('#skills .skill-row');
   const rowIO = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -165,14 +168,12 @@ const row2 = skills.slice(half);
 </script>
 
 <style>
-  /* Colored glow ring on hover — uses --gc CSS variable per icon */
   .skill-orb::after {
     content: '';
     position: absolute;
     inset: -2px;
     border-radius: 9999px;
     opacity: 0;
-    /* Fallback for browsers without color-mix */
     box-shadow: 0 0 18px 4px rgba(150,150,255,0.35);
     transition: opacity 0.3s ease;
   }
@@ -183,25 +184,19 @@ const row2 = skills.slice(half);
         inset 0 0 10px color-mix(in srgb, var(--gc) 18%, transparent);
     }
   }
-  .group:hover .skill-orb::after {
-    opacity: 1;
-  }
+  .group:hover .skill-orb::after { opacity: 1; }
 
-  /* Scale-in animation for marquee rows */
   .skill-row {
     opacity: 0;
     transform: scale(0.93) translateY(28px);
     transition: opacity 0.75s ease, transform 0.75s ease;
   }
-  .skill-row--delay {
-    transition-delay: 0.18s;
-  }
+  .skill-row--delay { transition-delay: 0.18s; }
   .skill-row--in {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
 
-  /* Marquee keyframes */
   @keyframes scroll-left {
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
@@ -211,14 +206,8 @@ const row2 = skills.slice(half);
     to   { transform: translateX(0); }
   }
 
-  .marquee-left {
-    animation: scroll-left 32s linear infinite;
-  }
-  .marquee-right {
-    animation: scroll-right 32s linear infinite;
-  }
+  .marquee-left  { animation: scroll-left  32s linear infinite; }
+  .marquee-right { animation: scroll-right 32s linear infinite; }
   .marquee-left:hover,
-  .marquee-right:hover {
-    animation-play-state: paused;
-  }
+  .marquee-right:hover { animation-play-state: paused; }
 </style>

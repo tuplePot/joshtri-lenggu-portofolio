@@ -6,18 +6,11 @@ import Button from '@/components/ui/Button.astro';
 const codingSince   = 2020;
 const yearsOfCoding = new Date().getFullYear() - codingSince;
 
-const stats = [
-  { value: `${yearsOfCoding}+`, label: 'Years Coding',    accent: 'text-white'     },
-  { value: '1.5+',              label: 'Years Pro Exp',   accent: 'text-blue-400'  },
-  { value: '10+',               label: 'Projects Built',  accent: 'text-white'     },
-  { value: '15+',               label: 'Technologies',    accent: 'text-blue-400'  },
-];
-
 const facts = [
-  { icon: 'lucide:map-pin',       label: 'North Jakarta, Indonesia', color: 'text-blue-400'   },
-  { icon: 'lucide:graduation-cap', label: 'Computer Science',         color: 'text-yellow-400' },
-  { icon: 'lucide:zap',           label: 'Coding since 2020',         color: 'text-purple-400' },
-  { icon: 'lucide:briefcase',     label: 'Open to opportunities',     color: 'text-green-400'  },
+  { icon: 'lucide:map-pin',        labelEn: 'North Jakarta, Indonesia', labelId: 'Jakarta Utara, Indonesia', color: 'text-blue-400'   },
+  { icon: 'lucide:graduation-cap', labelEn: 'Computer Science',         labelId: 'Ilmu Komputer',            color: 'text-yellow-400' },
+  { icon: 'lucide:zap',            labelEn: 'Coding since 2020',        labelId: 'Coding sejak 2020',         color: 'text-purple-400' },
+  { icon: 'lucide:briefcase',      labelEn: 'Open to opportunities',    labelId: 'Terbuka untuk peluang',     color: 'text-green-400'  },
 ];
 ---
 
@@ -28,7 +21,8 @@ const facts = [
     <div class="mb-16 about-label">
       <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-blue-400 uppercase">
         <span class="w-4 h-px bg-blue-400/60"></span>
-        About Me
+        <span class="i18n-en">About Me</span>
+        <span class="i18n-id">Tentang Saya</span>
         <span class="w-4 h-px bg-blue-400/60"></span>
       </span>
     </div>
@@ -39,43 +33,53 @@ const facts = [
       <!-- LEFT: Text content -->
       <div class="about-text">
         <Heading level="h2" class="text-white mb-6 leading-snug">
-          A bit about <br />
-          <span class="text-blue-400">who I am</span>
+          <span class="i18n-en">A bit about <br /><span class="text-blue-400">who I am</span></span>
+          <span class="i18n-id">Sedikit tentang <br /><span class="text-blue-400">siapa saya</span></span>
         </Heading>
 
         <p class="text-lg text-gray-400 leading-relaxed mb-4">
-          I'm <span class="text-white font-medium">Joshtri Lenggu</span> — a Full-Stack Developer
+          <span class="i18n-en">I'm <span class="text-white font-medium">Joshtri Lenggu</span> — a Full-Stack Developer
           from North Jakarta, Indonesia. I've been building for the web since 2020, working on
-          government platforms, internal tools, and personal projects across the full stack.
+          government platforms, internal tools, and personal projects across the full stack.</span>
+          <span class="i18n-id">Saya <span class="text-white font-medium">Joshtri Lenggu</span> — seorang Full-Stack Developer
+          dari Jakarta Utara, Indonesia. Saya telah membangun untuk web sejak 2020, mengerjakan
+          platform pemerintah, alat internal, dan proyek pribadi di seluruh stack.</span>
         </p>
 
         <p class="text-lg text-gray-400 leading-relaxed mb-8">
-          What drives me is simple: I like writing code that
+          <span class="i18n-en">What drives me is simple: I like writing code that
           <em class="text-white not-italic font-medium">actually works</em>.
           Not just passes a test — but holds up under real usage. Clean architecture,
-          sensible APIs, and UIs that don't need a manual. That's the standard I aim for.
+          sensible APIs, and UIs that don't need a manual. That's the standard I aim for.</span>
+          <span class="i18n-id">Yang mendorong saya sederhana: Saya suka menulis kode yang
+          <em class="text-white not-italic font-medium">benar-benar berfungsi</em>.
+          Bukan hanya lulus uji — tapi tahan di bawah penggunaan nyata. Arsitektur bersih,
+          API yang masuk akal, dan UI yang tidak perlu manual. Itulah standar yang saya tuju.</span>
         </p>
 
         <!-- Key facts -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
-          {facts.map(({ icon, label, color }) => (
+        <!-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
+          {facts.map(({ icon, labelEn, labelId, color }) => (
             <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/8 bg-white/4 hover:bg-white/6 transition-colors duration-200">
               <Icon name={icon} class={`w-5 h-5 shrink-0 ${color}`} />
-              <span class="text-base text-gray-300">{label}</span>
+              <span class="text-base text-gray-300">
+                <span class="i18n-en">{labelEn}</span>
+                <span class="i18n-id">{labelId}</span>
+              </span>
             </div>
           ))}
-        </div>
+        </div> -->
 
         <Button href="/cv.pdf" variant="outline" download>
           <Icon name="lucide:download" class="w-4 h-4" />
-          Download CV
+          <span class="i18n-en">Download CV</span>
+          <span class="i18n-id">Unduh CV</span>
         </Button>
       </div>
 
       <!-- RIGHT: Terminal card -->
       <div class="about-terminal relative">
 
-        <!-- Decorative glow behind card -->
         <div class="absolute -inset-10 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative rounded-2xl border border-white/10 bg-black/60 backdrop-blur-sm overflow-hidden">
@@ -90,15 +94,12 @@ const facts = [
 
           <!-- Terminal body -->
           <div class="p-6 font-mono text-sm leading-7 select-none">
-
-            <!-- Command line -->
             <p>
               <span class="text-green-400">joshtri@dev</span><span class="text-white/30">:</span><span class="text-blue-400">~</span>
               <span class="text-white/40"> $ </span>
               <span class="text-white">whoami</span>
             </p>
 
-            <!-- Output block -->
             <div class="mt-3">
               <p>
                 <span class="text-violet-400">const</span>
@@ -138,7 +139,6 @@ const facts = [
               <p><span class="text-white/50">&#125;</span></p>
             </div>
 
-            <!-- Next prompt with blinking cursor -->
             <div class="mt-4 flex items-center">
               <span class="text-green-400">joshtri@dev</span><span class="text-white/30">:</span><span class="text-blue-400">~</span>
               <span class="text-white/40"> $ </span>
@@ -146,30 +146,16 @@ const facts = [
             </div>
           </div>
 
-          <!-- Bottom glow accent -->
           <div class="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-blue-500/5 to-transparent pointer-events-none"></div>
         </div>
       </div>
 
     </div>
-
-    <!-- Stats strip (poin 8) -->
-    <div class="about-stats mt-16 rounded-2xl border border-white/8 bg-white/4 backdrop-blur-sm overflow-hidden">
-      <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/8">
-        {stats.map(({ value, label, accent }) => (
-          <div class="py-8 px-6 text-center group hover:bg-white/4 transition-colors duration-200">
-            <p class={`text-4xl font-bold tabular-nums ${accent}`}>{value}</p>
-            <p class="text-xs text-gray-500 mt-2 uppercase tracking-widest">{label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-
   </div>
 </section>
 
 <script>
-  const targets = document.querySelectorAll<HTMLElement>('.about-label, .about-text, .about-terminal, .about-stats');
+  const targets = document.querySelectorAll<HTMLElement>('.about-label, .about-text, .about-terminal');
 
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -204,8 +190,7 @@ const facts = [
 
   .about-label,
   .about-text,
-  .about-terminal,
-  .about-stats {
+  .about-terminal {
     opacity: 0;
     transform: translateY(28px);
     transition: opacity 0.75s ease, transform 0.75s ease;

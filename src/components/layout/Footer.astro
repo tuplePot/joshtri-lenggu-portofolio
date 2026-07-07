@@ -4,19 +4,19 @@ import { Icon } from 'astro-icon/components';
 const year = new Date().getFullYear();
 
 const socials = [
-  { href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/', icon: 'simple-icons:linkedin', label: 'LinkedIn' },
-  { href: 'https://github.com/Joshtri', icon: 'simple-icons:github', label: 'GitHub' },
-  { href: 'https://www.instagram.com/yosryy_lenggu/', icon: 'simple-icons:instagram', label: 'Instagram' },
-  { href: 'https://www.facebook.com', icon: 'simple-icons:facebook', label: 'Facebook' },
+  { href: 'https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/', icon: 'simple-icons:linkedin',  label: 'LinkedIn'  },
+  { href: 'https://github.com/Joshtri',                                   icon: 'simple-icons:github',    label: 'GitHub'    },
+  { href: 'https://www.instagram.com/yosryy_lenggu/',                     icon: 'simple-icons:instagram', label: 'Instagram' },
+  { href: 'https://www.facebook.com',                                     icon: 'simple-icons:facebook',  label: 'Facebook'  },
 ];
 
 const navLinks = [
-  { href: '#hero',       label: 'Home'       },
-  { href: '#about',      label: 'About'      },
-  { href: '#skills',     label: 'Skills'     },
-  { href: '#projects',   label: 'Projects'   },
-  { href: '#experience', label: 'Experience' },
-  { href: '#contact',    label: 'Contact'    },
+  { href: '#hero',       labelEn: 'Home',       labelId: 'Beranda'    },
+  { href: '#about',      labelEn: 'About',      labelId: 'Tentang'    },
+  { href: '#skills',     labelEn: 'Skills',     labelId: 'Keahlian'   },
+  { href: '#projects',   labelEn: 'Projects',   labelId: 'Proyek'     },
+  { href: '#experience', labelEn: 'Experience', labelId: 'Pengalaman' },
+  { href: '#contact',    labelEn: 'Contact',    labelId: 'Kontak'     },
 ];
 ---
 
@@ -34,9 +34,10 @@ const navLinks = [
 
         <!-- Nav -->
         <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1">
-          {navLinks.map(({ href, label }) => (
+          {navLinks.map(({ href, labelEn, labelId }) => (
             <a href={href} class="text-xs text-gray-500 hover:text-white/90 transition-colors duration-150">
-              {label}
+              <span class="i18n-en">{labelEn}</span>
+              <span class="i18n-id">{labelId}</span>
             </a>
           ))}
         </nav>
@@ -60,7 +61,9 @@ const navLinks = [
       <!-- Divider + copyright -->
       <div class="mt-4 pt-4 border-t border-white/8 text-center">
         <p class="text-xs text-gray-600">
-          &copy; {year} Arpakhsad Joshtri Sugiatma Lenggu &mdash; Built with Astro
+          &copy; {year} Arpakhsad Joshtri Sugiatma Lenggu &mdash;
+          <span class="i18n-en">Built with Astro</span>
+          <span class="i18n-id">Dibangun dengan Astro</span>
         </p>
       </div>
 

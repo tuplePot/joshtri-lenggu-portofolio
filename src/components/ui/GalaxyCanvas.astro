@@ -1,7 +1,9 @@
 ---
-// Galaxy background: orbiting stars, rotating nebulas, shooting stars.
-// Two layers: static dim background stars + orbiting galaxy stars.
-// Pauses automatically when scrolled off-screen.
+// Galaxy background: two-arm spiral of tinted stars on a tilted disk,
+// rotating nebulas, and occasional shooting stars.
+// Static dim background stars fill the rest of the canvas.
+// Pauses via IntersectionObserver when scrolled off-screen; renders a
+// single static frame when the user prefers reduced motion.
 ---
 
 <canvas
@@ -14,22 +16,49 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let raf;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    let raf = 0;
+    let running = false;
+    let cssW = 0;
+    let cssH = 0;
 
     function resize() {
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
       if (w > 0 && h > 0) {
-        canvas.width  = w;
-        canvas.height = h;
+        cssW = w;
+        cssH = h;
+        canvas.width  = w * dpr;
+        canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (reduceMotion) draw(performance.now());
       }
     }
     resize();
     const ro = new ResizeObserver(resize);
     if (canvas.parentElement) ro.observe(canvas.parentElement);
 
+    // Vertical squash gives the disk a tilted, 3D look
+    const SQUASH = 0.74;
+    const ARMS   = 2;
+    const WIND   = 2.4; // radians the arms wind from center to edge
+
+    // Star tints: white, blue-white, warm yellow, soft violet
+    const COLORS  = ['255,255,255', '190,215,255', '255,230,195', '225,200,255'];
+    const WEIGHTS = [0.4, 0.3, 0.15, 0.15];
+    function pickColor() {
+      let n = Math.random();
+      for (let i = 0; i < COLORS.length; i++) {
+        n -= WEIGHTS[i];
+        if (n <= 0) return COLORS[i];
+      }
+      return COLORS[0];
+    }
+
     // --- Static background stars (fill entire canvas, no motion) ---
-    const bgStars = Array.from({ length: 140 }, () => ({
+    const bgStars = Array.from({ length: 100 }, () => ({
       x:  Math.random(),
       y:  Math.random(),
       r:  Math.random() * 0.6 + 0.08,
@@ -38,27 +67,30 @@
       ph: Math.random() * Math.PI * 2,
     }));
 
-    // --- Orbiting galaxy stars (rotate around canvas center) ---
-    const galaxyStars = Array.from({ length: 220 }, () => {
-      const radius = Math.sqrt(Math.random()) * 0.46; // sqrt → uniform disk
+    // --- Spiral-arm stars: placed along two logarithmic-ish arms, then the
+    // whole pattern rotates rigidly so the arms never smear apart ---
+    const galaxyStars = Array.from({ length: 170 }, () => {
+      const t      = Math.sqrt(Math.random()); // 0..1 along the arm, denser core
+      const arm    = Math.floor(Math.random() * ARMS);
+      const spread = (Math.random() - 0.5) * (0.25 + t * 0.55); // arms fan out
       return {
-        angle:  Math.random() * Math.PI * 2,
-        radius,
-        r:      Math.random() ** 2 * 1.9 + 0.1,
-        b:      Math.random() * 0.55 + 0.45,
-        sp:     Math.random() * 1.5 + 0.3,
-        ph:     Math.random() * Math.PI * 2,
-        // Differential rotation: inner stars spin faster (like a real galaxy)
-        dA:     0.00022 + (1 - radius / 0.46) * 0.00022,
+        baseAngle: arm * ((Math.PI * 2) / ARMS) + t * WIND + spread,
+        radius:    t * 0.48,
+        r:         Math.random() ** 2 * 1.8 + 0.2,
+        rgb:       pickColor(),
+        b:         Math.random() * 0.55 + 0.45,
+        sp:        Math.random() * 1.5 + 0.3,
+        ph:        Math.random() * Math.PI * 2,
       };
     });
+    const SPIN = 0.00002; // rad per ms — full turn in ~5 min
 
-    // --- Nebula blobs orbiting the center ---
+    // --- Nebula blobs orbiting the center (angles advance per ms) ---
     const nebulas = [
-      { angle: Math.PI * 0.20, radius: 0.30, r: 0.55, rgb: '110,40,230', dA: 0.000055 },
-      { angle: Math.PI * 0.85, radius: 0.26, r: 0.50, rgb: '30,90,220',  dA: 0.000075 },
-      { angle: Math.PI * 1.38, radius: 0.32, r: 0.48, rgb: '0,160,180',  dA: 0.000048 },
-      { angle: Math.PI * 1.82, radius: 0.28, r: 0.44, rgb: '220,35,145', dA: 0.000065 },
+      { base: Math.PI * 0.20, radius: 0.30, r: 0.55, rgb: '110,40,230', sp: 0.0000034 },
+      { base: Math.PI * 0.85, radius: 0.26, r: 0.50, rgb: '30,90,220',  sp: 0.0000047 },
+      { base: Math.PI * 1.38, radius: 0.32, r: 0.48, rgb: '0,160,180',  sp: 0.0000030 },
+      { base: Math.PI * 1.82, radius: 0.28, r: 0.44, rgb: '220,35,145', sp: 0.0000041 },
     ];
 
     // --- Shooting stars ---
@@ -67,9 +99,12 @@
     let nextDelay = 4000 + Math.random() * 3000;
 
     function draw(now) {
-      const W = canvas.width;
-      const H = canvas.height;
-      if (!W || !H) { raf = requestAnimationFrame(draw); return; }
+      const W = cssW;
+      const H = cssH;
+      if (!W || !H) {
+        if (running) raf = requestAnimationFrame(draw);
+        return;
+      }
 
       const cx  = W / 2;
       const cy  = H / 2;
@@ -79,19 +114,25 @@
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, W, H);
 
-      // Central galaxy core glow
-      const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, dim * 0.38);
-      core.addColorStop(0,   'rgba(150,100,255,0.16)');
-      core.addColorStop(0.4, 'rgba(60,30,160,0.07)');
-      core.addColorStop(1,   'rgba(0,0,0,0)');
+      // Central core glow: warm bright center inside a violet halo,
+      // squashed to match the tilted disk
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, SQUASH);
+      const core = ctx.createRadialGradient(0, 0, 0, 0, 0, dim * 0.38);
+      core.addColorStop(0,    'rgba(255,235,210,0.14)');
+      core.addColorStop(0.15, 'rgba(150,100,255,0.13)');
+      core.addColorStop(0.5,  'rgba(60,30,160,0.06)');
+      core.addColorStop(1,    'rgba(0,0,0,0)');
       ctx.fillStyle = core;
-      ctx.fillRect(0, 0, W, H);
+      ctx.fillRect(-cx, -cy / SQUASH, W, H / SQUASH);
+      ctx.restore();
 
       // Rotating nebula blobs
       nebulas.forEach(n => {
-        n.angle += n.dA;
-        const nx = cx + Math.cos(n.angle) * n.radius * dim;
-        const ny = cy + Math.sin(n.angle) * n.radius * dim;
+        const a  = n.base + now * n.sp;
+        const nx = cx + Math.cos(a) * n.radius * dim;
+        const ny = cy + Math.sin(a) * n.radius * dim * SQUASH;
         const gr = n.r * dim;
 
         const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, gr);
@@ -112,24 +153,25 @@
         ctx.fill();
       });
 
-      // Orbiting galaxy stars — brighter, rotate around center
+      // Spiral stars — the whole pattern rotates rigidly around the center
+      const theta = now * SPIN;
       galaxyStars.forEach(s => {
-        s.angle += s.dA;
-        const px = cx + Math.cos(s.angle) * s.radius * dim;
-        const py = cy + Math.sin(s.angle) * s.radius * dim;
+        const ang = s.baseAngle + theta;
+        const px  = cx + Math.cos(ang) * s.radius * dim;
+        const py  = cy + Math.sin(ang) * s.radius * dim * SQUASH;
 
         const tw = (Math.sin(now * 0.001 * s.sp + s.ph) + 1) * 0.5;
         const a  = s.b * (0.35 + tw * 0.65);
 
         ctx.beginPath();
         ctx.arc(px, py, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        ctx.fillStyle = `rgba(${s.rgb},${a})`;
         ctx.fill();
 
-        // Soft glow for larger stars
+        // Soft glow for larger stars, tinted to match
         if (s.r > 0.9) {
           const glow = ctx.createRadialGradient(px, py, 0, px, py, s.r * 6);
-          glow.addColorStop(0, `rgba(180,210,255,${a * 0.35})`);
+          glow.addColorStop(0, `rgba(${s.rgb},${a * 0.35})`);
           glow.addColorStop(1, 'rgba(0,0,0,0)');
           ctx.beginPath();
           ctx.arc(px, py, s.r * 6, 0, Math.PI * 2);
@@ -139,48 +181,67 @@
       });
 
       // Shooting stars (screen coords, independent of galaxy rotation)
-      if (now - lastShot > nextDelay) {
-        lastShot  = now;
-        nextDelay = 4000 + Math.random() * 3500;
-        shooters.push({
-          x:    Math.random() * 0.55,
-          y:    Math.random() * 0.40,
-          len:  70 + Math.random() * 130,
-          sp:   0.10 + Math.random() * 0.12,
-          ang:  0.35 + Math.random() * 0.35,
-          born: now,
-          life: 600 + Math.random() * 500,
+      if (!reduceMotion) {
+        if (now - lastShot > nextDelay) {
+          lastShot  = now;
+          nextDelay = 4000 + Math.random() * 3500;
+          shooters.push({
+            x:    Math.random() * 0.55,
+            y:    Math.random() * 0.40,
+            len:  70 + Math.random() * 130,
+            sp:   0.10 + Math.random() * 0.12,
+            ang:  0.35 + Math.random() * 0.35,
+            born: now,
+            life: 600 + Math.random() * 500,
+          });
+        }
+
+        shooters = shooters.filter(sh => now - sh.born < sh.life);
+        shooters.forEach(({ x, y, len, sp, ang, born, life }) => {
+          const p  = (now - born) / life;
+          const a  = p < 0.15 ? p / 0.15 : 1 - (p - 0.15) / 0.85;
+          const dx = Math.cos(ang);
+          const dy = Math.sin(ang);
+          const hx = (x + dx * sp * p) * W;
+          const hy = (y + dy * sp * p) * H;
+
+          const sg = ctx.createLinearGradient(hx - dx * len, hy - dy * len, hx, hy);
+          sg.addColorStop(0,   'rgba(255,255,255,0)');
+          sg.addColorStop(0.7, `rgba(200,220,255,${a * 0.5})`);
+          sg.addColorStop(1,   `rgba(255,255,255,${a})`);
+
+          ctx.beginPath();
+          ctx.moveTo(hx - dx * len, hy - dy * len);
+          ctx.lineTo(hx, hy);
+          ctx.strokeStyle = sg;
+          ctx.lineWidth   = 1.5;
+          ctx.stroke();
         });
       }
 
-      shooters = shooters.filter(sh => now - sh.born < sh.life);
-      shooters.forEach(({ x, y, len, sp, ang, born, life }) => {
-        const p  = (now - born) / life;
-        const a  = p < 0.15 ? p / 0.15 : 1 - (p - 0.15) / 0.85;
-        const dx = Math.cos(ang);
-        const dy = Math.sin(ang);
-        const hx = (x + dx * sp * p) * W;
-        const hy = (y + dy * sp * p) * H;
+      if (running) raf = requestAnimationFrame(draw);
+    }
 
-        const sg = ctx.createLinearGradient(hx - dx * len, hy - dy * len, hx, hy);
-        sg.addColorStop(0,   'rgba(255,255,255,0)');
-        sg.addColorStop(0.7, `rgba(200,220,255,${a * 0.5})`);
-        sg.addColorStop(1,   `rgba(255,255,255,${a})`);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(hx - dx * len, hy - dy * len);
-        ctx.lineTo(hx, hy);
-        ctx.strokeStyle = sg;
-        ctx.lineWidth   = 1.5;
-        ctx.stroke();
-        ctx.restore();
-      });
-
+    function start() {
+      if (running || reduceMotion) return;
+      running = true;
       raf = requestAnimationFrame(draw);
     }
 
-    raf = requestAnimationFrame(draw);
+    function stop() {
+      running = false;
+      cancelAnimationFrame(raf);
+    }
+
+    if (reduceMotion) {
+      draw(performance.now());
+    } else {
+      const io = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) start();
+        else stop();
+      });
+      io.observe(canvas);
+    }
   }
 
   document.querySelectorAll('.galaxy-canvas').forEach(el => initGalaxy(el));

@@ -4,12 +4,12 @@ import LanguageSwitcher from '@/components/ui/LanguageSwitcher.astro';
 import { SITE_TITLE } from '../../consts';
 
 const navLinks = [
-  { href: '#hero',       label: 'Home'       },
-  { href: '#about',      label: 'About'      },
-  { href: '#skills',     label: 'Skills'     },
-  { href: '#projects',   label: 'Projects'   },
-  { href: '#experience', label: 'Experience' },
-  { href: '#contact',    label: 'Contact'    },
+  { href: '#hero',       labelEn: 'Home',       labelId: 'Beranda'    },
+  { href: '#about',      labelEn: 'About',      labelId: 'Tentang'    },
+  { href: '#skills',     labelEn: 'Skills',     labelId: 'Keahlian'   },
+  { href: '#projects',   labelEn: 'Projects',   labelId: 'Proyek'     },
+  { href: '#experience', labelEn: 'Experience', labelId: 'Pengalaman' },
+  { href: '#contact',    labelEn: 'Contact',    labelId: 'Kontak'     },
 ];
 
 const socialLinks = [
@@ -31,14 +31,15 @@ const socialLinks = [
 
       <!-- Desktop nav links -->
       <ul class="hidden md:flex items-center gap-1">
-        {navLinks.map(({ href, label }) => (
+        {navLinks.map(({ href, labelEn, labelId }) => (
           <li>
             <a
               href={href}
               data-nav={href.slice(1)}
               class="nav-link px-3 py-1.5 text-sm text-white/70 hover:text-white rounded-full transition-all duration-200"
             >
-              {label}
+              <span class="i18n-en">{labelEn}</span>
+              <span class="i18n-id">{labelId}</span>
             </a>
           </li>
         ))}
@@ -62,15 +63,15 @@ const socialLinks = [
         ))}
       </div>
 
-      <!-- Divider (desktop, between socials and language switcher) -->
+      <!-- Divider (desktop) -->
       <span class="hidden md:block h-4 w-px bg-white/20"></span>
 
-      <!-- Language switcher (desktop only — mobile version lives in the panel) -->
+      <!-- Language switcher (desktop only) -->
       <div class="hidden md:block">
         <LanguageSwitcher />
       </div>
 
-      <!-- Divider (mobile, between socials and burger) -->
+      <!-- Divider (mobile) -->
       <span class="md:hidden h-4 w-px bg-white/20"></span>
 
       <!-- Hamburger button (mobile only) -->
@@ -87,7 +88,7 @@ const socialLinks = [
   </div>
 </header>
 
-<!-- Mobile menu overlay (lives outside <header> so it covers the full viewport) -->
+<!-- Mobile menu overlay -->
 <div id="mobile-menu" aria-hidden="true">
 
   <!-- Backdrop -->
@@ -111,14 +112,15 @@ const socialLinks = [
     <!-- Mobile nav links -->
     <nav class="flex-1 overflow-y-auto px-4 py-6">
       <ul class="space-y-1">
-        {navLinks.map(({ href, label }) => (
+        {navLinks.map(({ href, labelEn, labelId }) => (
           <li>
             <a
               href={href}
               data-nav-mobile={href.slice(1)}
               class="mobile-nav-link flex items-center px-4 py-3 text-base text-white/70 hover:text-white rounded-xl transition-all duration-200"
             >
-              {label}
+              <span class="i18n-en">{labelEn}</span>
+              <span class="i18n-id">{labelId}</span>
             </a>
           </li>
         ))}
@@ -128,10 +130,16 @@ const socialLinks = [
     <!-- Panel footer -->
     <div class="px-6 py-5 border-t border-white/8">
       <div class="flex items-center justify-between mb-4">
-        <p class="text-[10px] text-gray-600 uppercase tracking-widest">Language</p>
+        <p class="text-[10px] text-gray-600 uppercase tracking-widest">
+          <span class="i18n-en">Language</span>
+          <span class="i18n-id">Bahasa</span>
+        </p>
         <LanguageSwitcher />
       </div>
-      <p class="text-[10px] text-gray-600 uppercase tracking-widest mb-3">Connect</p>
+      <p class="text-[10px] text-gray-600 uppercase tracking-widest mb-3">
+        <span class="i18n-en">Connect</span>
+        <span class="i18n-id">Terhubung</span>
+      </p>
       <div class="flex items-center gap-2">
         {socialLinks.map(({ href, icon, label }) => (
           <a
@@ -151,7 +159,6 @@ const socialLinks = [
 </div>
 
 <script>
-  // ── Mobile menu ──────────────────────────────────────────────────────────
   const toggle   = document.getElementById('menu-toggle');
   const closeBtn = document.getElementById('menu-close');
   const overlay  = document.getElementById('mobile-menu');
@@ -185,12 +192,10 @@ const socialLinks = [
     link.addEventListener('click', closeMenu)
   );
 
-  // Close on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeMenu();
   });
 
-  // ── Active nav state on scroll ───────────────────────────────────────────
   const desktopLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
   const mobileLinks  = document.querySelectorAll<HTMLAnchorElement>('[data-nav-mobile]');
   const sections     = Array.from(document.querySelectorAll<HTMLElement>('section[id]'));
@@ -207,11 +212,9 @@ const socialLinks = [
   function onScroll() {
     const threshold = window.scrollY + window.innerHeight * 0.35;
     let current = sections[0]?.id ?? '';
-
     for (const s of sections) {
       if (s.offsetTop <= threshold) current = s.id;
     }
-
     setActive(current);
   }
 
@@ -220,7 +223,6 @@ const socialLinks = [
 </script>
 
 <style>
-  /* ── Mobile overlay ── */
   #mobile-menu {
     position: fixed;
     inset: 0;
@@ -249,27 +251,20 @@ const socialLinks = [
     transform: translateX(0);
   }
 
-  /* ── Desktop active link ── */
-  .nav-link {
-    transition: background-color 0.2s, color 0.2s;
-  }
+  .nav-link { transition: background-color 0.2s, color 0.2s; }
 
   .nav-link.nav-active {
     color: white;
     background-color: rgba(255, 255, 255, 0.15);
   }
 
-  /* ── Mobile active link ── */
-  .mobile-nav-link {
-    transition: background-color 0.2s, color 0.2s;
-  }
+  .mobile-nav-link { transition: background-color 0.2s, color 0.2s; }
 
   .mobile-nav-active {
     color: white;
     background-color: rgba(255, 255, 255, 0.08);
   }
 
-  /* Mobile hover */
   .mobile-nav-link:not(.mobile-nav-active):hover {
     background-color: rgba(255, 255, 255, 0.05);
   }

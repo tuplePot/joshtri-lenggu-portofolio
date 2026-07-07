@@ -4,93 +4,49 @@ import Heading from '@/components/ui/Heading.astro';
 import Paragraph from '@/components/ui/Paragraph.astro';
 import ProjectCard from '@/components/ui/ProjectCard.astro';
 import type { Project } from '@/components/ui/ProjectCard.astro';
+import type { I18nString } from '@/components/ui/ProjectCard.astro';
 
 import { fetchApi } from '@/utils/api';
 
-let projects: Project[] = [];
-projects = await fetchApi<Project[]>('/api/projects') ?? [];
+const projects: Project[] = await fetchApi<Project[]>('/api/projects') ?? [];
 
-if (projects.length === 0) {
-  projects = [
-    {
-      title: 'Government E-Service Platform',
-      description: 'A digital service platform for government administration — handling citizen requests, document management, and workflow approvals at the municipal level.',
-      skillIds: [
-        { _id: 'r',  name: 'React',      icon: 'simple-icons:react',      color: '#61DAFB' },
-        { _id: 'n',  name: 'Node.js',    icon: 'simple-icons:nodedotjs',  color: '#339933' },
-        { _id: 'm',  name: 'MongoDB',    icon: 'simple-icons:mongodb',    color: '#47A248' },
-        { _id: 'ts', name: 'TypeScript', icon: 'simple-icons:typescript', color: '#3178C6' },
-      ],
-    },
-    {
-      title: 'HR Management System',
-      description: 'A web-based HR tool for managing employee records, attendance, leave requests, and payroll — built for a mid-size organisation.',
-      skillIds: [
-        { _id: 'l',   name: 'Laravel', icon: 'simple-icons:laravel',     color: '#FF2D20' },
-        { _id: 'sql', name: 'MySQL',   icon: 'simple-icons:mysql',       color: '#4479A1' },
-        { _id: 'v',   name: 'Vue.js',  icon: 'simple-icons:vuedotjs',    color: '#42B883' },
-      ],
-    },
-    {
-      title: 'Developer Portfolio',
-      description: 'This portfolio — built with Astro and Tailwind CSS v4, featuring an animated galaxy canvas, sticky scroll effects, and responsive section layout.',
-      skillIds: [
-        { _id: 'a',   name: 'Astro',    icon: 'simple-icons:astro',       color: '#FF5D01' },
-        { _id: 'tw',  name: 'Tailwind', icon: 'simple-icons:tailwindcss', color: '#06B6D4' },
-        { _id: 'ts2', name: 'TypeScript', icon: 'simple-icons:typescript', color: '#3178C6' },
-      ],
-      link: 'https://github.com/Joshtri',
-    },
-    {
-      title: 'Inventory & POS System',
-      description: 'A point-of-sale and inventory management system for a local retail business — real-time stock tracking, sales reports, and receipt printing.',
-      skillIds: [
-        { _id: 'l2',  name: 'Laravel',    icon: 'simple-icons:laravel',    color: '#FF2D20' },
-        { _id: 'vue2', name: 'Vue.js',    icon: 'simple-icons:vuedotjs',   color: '#42B883' },
-        { _id: 'my2', name: 'MySQL',      icon: 'simple-icons:mysql',      color: '#4479A1' },
-      ],
-    },
-    {
-      title: 'Task & Project Tracker',
-      description: 'A lightweight project management tool with boards, task assignments, deadlines, and team collaboration — inspired by the simplicity of Trello.',
-      skillIds: [
-        { _id: 'r2', name: 'React',      icon: 'simple-icons:react',       color: '#61DAFB' },
-        { _id: 'e',  name: 'Express',    icon: 'simple-icons:express',     color: '#E2E8F0' },
-        { _id: 'pg', name: 'PostgreSQL', icon: 'simple-icons:postgresql',  color: '#4169E1' },
-      ],
-    },
-    {
-      title: 'API Gateway & Auth Service',
-      description: 'A central authentication and API gateway service with JWT, refresh tokens, role-based access control, and rate limiting for microservice architecture.',
-      skillIds: [
-        { _id: 'nd', name: 'Node.js',    icon: 'simple-icons:nodedotjs',  color: '#339933' },
-        { _id: 'dc', name: 'Docker',     icon: 'simple-icons:docker',     color: '#2496ED' },
-        { _id: 'mg', name: 'MongoDB',    icon: 'simple-icons:mongodb',    color: '#47A248' },
-      ],
-    },
-  ];
-}
+const filters = [
+  { key: 'ALL',       labelEn: 'All',        labelId: 'Semua'     },
+  { key: 'FRONTEND',  labelEn: 'Frontend',   labelId: 'Frontend'  },
+  { key: 'BACKEND',   labelEn: 'Backend',    labelId: 'Backend'   },
+  { key: 'FULLSTACK', labelEn: 'Full-stack', labelId: 'Full-stack' },
+];
+
+const getText = (v: I18nString | string | undefined): string => {
+  if (!v) return '';
+  if (typeof v === 'string') return v;
+  return `${v.en} ${v.id}`;
+};
+
+const years = [...new Set(
+  projects.map(p => p.projectYear).filter((y): y is number => !!y)
+)].sort((a, b) => b - a);
 ---
 
 <section id="projects" class="relative py-24 overflow-hidden">
-
   <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10">
 
     <!-- Header -->
-    <div class="proj-header flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+    <div class="proj-header flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
       <div>
         <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">
           <span class="w-4 h-px bg-blue-400/60"></span>
-          My Work
+          <span class="i18n-en">My Work</span>
+          <span class="i18n-id">Karya Saya</span>
           <span class="w-4 h-px bg-blue-400/60"></span>
         </span>
-
         <Heading level="h2" class="text-white drop-shadow-[0_0_24px_rgba(100,150,255,0.25)]">
-          Selected Projects
+          <span class="i18n-en">Selected Projects</span>
+          <span class="i18n-id">Proyek Pilihan</span>
         </Heading>
-
         <Paragraph color="muted" class="mt-2 max-w-md">
-          A few things I've built — from government platforms to personal experiments.
+          <span class="i18n-en">A few things I've built — from government platforms to personal experiments.</span>
+          <span class="i18n-id">Beberapa hal yang saya bangun — dari platform pemerintah hingga eksperimen pribadi.</span>
         </Paragraph>
       </div>
 
@@ -106,31 +62,188 @@ if (projects.length === 0) {
       </a>
     </div>
 
-    <!-- Scrollable grid -->
-    <div class="proj-grid relative">
-      <div class="projects-scroll max-h-[660px] overflow-y-auto pr-1">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-6">
+    <!-- Search + Filter row -->
+    <div class="proj-filters flex flex-col sm:flex-row gap-3 mb-8">
+
+      <!-- Search bar -->
+      <div class="relative flex-1 max-w-sm">
+        <Icon name="lucide:search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
+        <input
+          id="proj-search"
+          type="text"
+          placeholder="Search projects..."
+          autocomplete="off"
+          spellcheck="false"
+          class="w-full pl-9 pr-9 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-white placeholder-gray-500 outline-none focus:border-blue-400/40 focus:bg-white/8 transition-all duration-200"
+        />
+        <button
+          id="proj-search-clear"
+          aria-label="Clear search"
+          class="absolute right-3 top-1/2 -translate-y-1/2 hidden text-gray-500 hover:text-white transition-colors"
+        >
+          <Icon name="lucide:x" class="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <!-- Type filters -->
+      <div class="flex flex-wrap gap-2">
+        {filters.map(({ key, labelEn, labelId }, i) => (
+          <button
+            data-filter={key}
+            class={`filter-btn px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 ${key === 'ALL' ? 'border-blue-400/60 text-blue-400 bg-blue-400/10' : 'border-white/10 text-gray-400 bg-white/4 hover:border-white/20 hover:text-white'}`}
+          >
+            <span class="i18n-en">{labelEn}</span>
+            <span class="i18n-id">{labelId}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Year filter -->
+    {years.length > 0 && (
+      <div class="proj-years flex items-center gap-5 mb-7 overflow-x-auto" style="scrollbar-width:none">
+        <button data-year="ALL" class="year-btn shrink-0 text-xs font-mono text-blue-400 transition-colors duration-200">
+          <span class="i18n-en">All</span>
+          <span class="i18n-id">Semua</span>
+        </button>
+        {years.map(y => (
+          <button
+            data-year={String(y)}
+            class="year-btn shrink-0 text-xs font-mono text-gray-500 hover:text-gray-300 transition-colors duration-200"
+          >
+            {y}
+          </button>
+        ))}
+      </div>
+    )}
+
+    <!-- Scrollable grid with fade mask -->
+    <div class="proj-grid">
+      <div class="projects-scroll max-h-192 overflow-y-auto pr-1">
+        <div id="projects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 py-4">
           {projects.map((project) => (
-            <ProjectCard project={project} />
+            <div
+              data-type={project.type ?? ''}
+              data-year={String(project.projectYear ?? '')}
+              data-search={getText(project.title).toLowerCase() + ' ' + getText(project.description).toLowerCase()}
+              class="project-item"
+            >
+              <ProjectCard project={project} />
+            </div>
           ))}
         </div>
       </div>
     </div>
 
-    <!-- Project count -->
-    <p class="proj-count text-center text-xs text-gray-600 mt-5">
-      {projects.length} project{projects.length !== 1 ? 's' : ''} — scroll to see all
+    <!-- Empty state -->
+    <div id="proj-empty" class="hidden text-center py-16">
+      <Icon name="lucide:search-x" class="w-10 h-10 text-gray-600 mx-auto mb-3" />
+      <p class="text-sm text-gray-500">
+        <span class="i18n-en">No projects match your search.</span>
+        <span class="i18n-id">Tidak ada proyek yang cocok dengan pencarian Anda.</span>
+      </p>
+    </div>
+
+    <!-- Count -->
+    <p id="proj-count" class="proj-count text-center text-xs text-gray-600 mt-4">
+      {projects.length} project{projects.length !== 1 ? 's' : ''}
     </p>
 
   </div>
-
 </section>
 
 <script>
-  const targets = [
-    ...document.querySelectorAll<HTMLElement>('.proj-header, .proj-grid, .proj-count'),
-  ];
+  const filterBtns  = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items       = document.querySelectorAll<HTMLElement>('.project-item');
+  const countEl     = document.getElementById('proj-count');
+  const emptyEl     = document.getElementById('proj-empty');
+  const searchInput = document.getElementById('proj-search') as HTMLInputElement | null;
+  const searchClear = document.getElementById('proj-search-clear');
 
+  let activeFilter = 'ALL';
+  let activeYear   = 'ALL';
+  let searchQuery  = '';
+
+  function getLang(): string { return document.documentElement.getAttribute('data-lang') ?? 'en'; }
+
+  function countText(n: number): string {
+    if (getLang() === 'id') return `${n} proyek`;
+    return `${n} project${n !== 1 ? 's' : ''}`;
+  }
+
+  function updatePlaceholder() {
+    if (searchInput) {
+      searchInput.placeholder = getLang() === 'id' ? 'Cari proyek...' : 'Search projects...';
+    }
+  }
+
+  function applyFilters() {
+    let visible = 0;
+    items.forEach(item => {
+      const type  = item.dataset.type ?? '';
+      const year  = item.dataset.year ?? '';
+      const text  = item.dataset.search ?? '';
+      const matchesType   = activeFilter === 'ALL' || type.toUpperCase() === activeFilter;
+      const matchesYear   = activeYear === 'ALL' || year === activeYear;
+      const matchesSearch = !searchQuery || text.includes(searchQuery);
+      const show = matchesType && matchesYear && matchesSearch;
+      item.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (countEl) countEl.textContent = countText(visible);
+    if (emptyEl) emptyEl.classList.toggle('hidden', visible > 0);
+  }
+
+  const FILTER_ACTIVE   = 'filter-btn px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 border-blue-400/60 text-blue-400 bg-blue-400/10';
+  const FILTER_INACTIVE = 'filter-btn px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 border-white/10 text-gray-400 bg-white/4 hover:border-white/20 hover:text-white';
+  const YEAR_ACTIVE     = 'year-btn shrink-0 text-xs font-mono text-blue-400 transition-colors duration-200';
+  const YEAR_INACTIVE   = 'year-btn shrink-0 text-xs font-mono text-gray-500 hover:text-gray-300 transition-colors duration-200';
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.filter ?? 'ALL';
+      filterBtns.forEach(b => {
+        b.className = b.dataset.filter === activeFilter ? FILTER_ACTIVE : FILTER_INACTIVE;
+      });
+      applyFilters();
+    });
+  });
+
+  const yearBtns = document.querySelectorAll<HTMLButtonElement>('.year-btn');
+  yearBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeYear = btn.dataset.year ?? 'ALL';
+      yearBtns.forEach(b => {
+        b.className = b.dataset.year === activeYear ? YEAR_ACTIVE : YEAR_INACTIVE;
+      });
+      applyFilters();
+    });
+  });
+
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value.trim().toLowerCase();
+    if (searchClear) searchClear.classList.toggle('hidden', !searchQuery);
+    applyFilters();
+  });
+
+  searchClear?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    searchQuery = '';
+    searchClear.classList.add('hidden');
+    searchInput?.focus();
+    applyFilters();
+  });
+
+  // React to lang changes: re-render count + placeholder
+  new MutationObserver(() => {
+    updatePlaceholder();
+    applyFilters();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+
+  updatePlaceholder();
+
+  // Scroll-in animation
+  const targets = document.querySelectorAll<HTMLElement>('.proj-header, .proj-filters, .proj-grid, .proj-count');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -141,31 +254,33 @@ if (projects.length === 0) {
   }, { threshold: 0.1 });
 
   targets.forEach((el, i) => {
-    el.style.transitionDelay = `${i * 0.1}s`;
+    el.style.transitionDelay = `${i * 0.08}s`;
     io.observe(el);
   });
 </script>
 
 <style>
   .proj-header,
+  .proj-filters,
   .proj-grid,
   .proj-count {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(24px);
     transition: opacity 0.7s ease, transform 0.7s ease;
   }
-
   .proj--in {
     opacity: 1;
     transform: translateY(0);
   }
 
   .projects-scroll {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
 
-  .projects-scroll::-webkit-scrollbar { width: 3px; }
+  .projects-scroll::-webkit-scrollbar       { width: 3px; }
   .projects-scroll::-webkit-scrollbar-track { background: transparent; }
   .projects-scroll::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.08);
@@ -174,4 +289,6 @@ if (projects.length === 0) {
   .projects-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(100, 150, 255, 0.25);
   }
+
+  .proj-years::-webkit-scrollbar { display: none; }
 </style>

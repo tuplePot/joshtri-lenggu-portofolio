@@ -1,0 +1,280 @@
+---
+import { Icon } from 'astro-icon/components';
+import BaseHead from '@/components/BaseHead.astro';
+import Footer from '@/components/layout/Footer.astro';
+import GalaxyCanvas from '@/components/ui/GalaxyCanvas.astro';
+import ProjectCard from '@/components/ui/ProjectCard.astro';
+import type { Project } from '@/components/ui/ProjectCard.astro';
+import { fetchApi } from '@/utils/api';
+import { getFileUrl } from '@/utils/appwrite';
+import { SITE_TITLE } from '@/consts';
+
+export async function getStaticPaths() {
+  const projects = await fetchApi<Project[]>('/api/projects') ?? [];
+
+  return projects
+    .filter(p => !!p._id)
+    .map(project => {
+      const currentSkillIds = new Set((project.skillIds ?? []).map(s => s._id));
+
+      const related = projects
+        .filter(p => p._id !== project._id)
+        .map(p => ({
+          project: p,
+          score: (p.skillIds ?? []).filter(s => currentSkillIds.has(s._id)).length,
+        }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(({ project: p }) => p);
+
+      return { params: { id: project._id! }, props: { project, related } };
+    });
+}
+
+interface Props {
+  project: Project;
+  related: Project[];
+}
+
+const { project, related } = Astro.props;
+
+const pickLang = (text: { id: string; en: string } | string | undefined, lang: 'en' | 'id', fallback = '') => {
+  if (!text) return fallback;
+  if (typeof text === 'string') return text;
+  return text[lang] || text[lang === 'en' ? 'id' : 'en'] || fallback;
+};
+
+const titleEn = pickLang(project.title, 'en', 'Untitled Project');
+const titleId = pickLang(project.title, 'id', 'Untitled Project');
+const descEn  = pickLang(project.description, 'en');
+const descId  = pickLang(project.description, 'id');
+
+const thumbnailUrl = project.thumbnailId ? getFileUrl(project.thumbnailId) : null;
+const screenshotUrls = (project.screenshots ?? []).map(id => getFileUrl(id));
+const allImages = [thumbnailUrl, ...screenshotUrls].filter((u): u is string => !!u);
+
+const typeConfig: Record<string, { label: string; cls: string }> = {
+  FRONTEND:  { label: 'Frontend',   cls: 'text-blue-400 bg-blue-400/10 border-blue-400/30'   },
+  BACKEND:   { label: 'Backend',    cls: 'text-green-400 bg-green-400/10 border-green-400/30' },
+  FULLSTACK: { label: 'Full-stack', cls: 'text-amber-400 bg-amber-400/10 border-amber-400/30' },
+};
+const typeInfo = project.type ? typeConfig[project.type] : null;
+
+const skills = project.skillIds ?? [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      title={`${titleEn} — ${SITE_TITLE}`}
+      description={descEn || `${titleEn} project by Joshtri Lenggu`}
+      ogImage={thumbnailUrl ?? undefined}
+    />
+  </head>
+  <body class="bg-black text-white min-h-screen">
+
+    <div class="fixed inset-0 -z-10 w-full h-full">
+      <GalaxyCanvas />
+    </div>
+
+    <!-- Simple header -->
+    <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 h-16 border-b border-white/6 bg-black/40 backdrop-blur-md">
+      <a href="/" class="text-sm font-bold tracking-tight text-white hover:opacity-70 transition-opacity">
+        {SITE_TITLE}
+      </a>
+      <a
+        href="/#projects"
+        class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
+      >
+        <Icon name="lucide:arrow-left" class="w-3.5 h-3.5" />
+        All projects
+      </a>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 sm:px-10 pt-28 pb-24">
+
+      <!-- Back breadcrumb (mobile compact) -->
+      <nav class="mb-8 detail-in" style="--delay:0s">
+        <a href="/#projects" class="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-blue-400 transition-colors">
+          <Icon name="lucide:chevron-left" class="w-3.5 h-3.5" />
+          Back to projects
+        </a>
+      </nav>
+
+      <!-- Hero -->
+      <div class="mb-10 detail-in" style="--delay:0.05s">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          {typeInfo && (
+            <span class={`px-2.5 py-1 rounded-full border text-xs font-semibold ${typeInfo.cls}`}>
+              {typeInfo.label}
+            </span>
+          )}
+          {project.projectYear && (
+            <span class="px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-gray-400 font-mono">
+              {project.projectYear}
+            </span>
+          )}
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl font-bold text-white leading-snug mb-2">
+          <span class="i18n-en">{titleEn}</span>
+          <span class="i18n-id">{titleId}</span>
+        </h1>
+
+        <!-- Action links -->
+        <div class="flex flex-wrap gap-3 mt-5">
+          {project.link && project.link !== '#' && (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2 px-4 py-2 rounded-full border border-blue-400/40 bg-blue-400/10 text-sm text-blue-400 hover:bg-blue-400/20 transition-colors"
+            >
+              <Icon name="lucide:external-link" class="w-4 h-4" />
+              Live Demo
+            </a>
+          )}
+          {project.githubRepoUrl && (
+            <a
+              href={project.githubRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/15 bg-white/5 text-sm text-gray-300 hover:text-white hover:border-white/30 transition-colors"
+            >
+              <Icon name="simple-icons:github" class="w-4 h-4" />
+              Source Code
+            </a>
+          )}
+        </div>
+      </div>
+
+      <!-- Gallery -->
+      {allImages.length > 0 && (
+        <div class="mb-10 detail-in" style="--delay:0.1s">
+          <div class="relative rounded-2xl overflow-hidden border border-white/10 bg-[#080810] aspect-video">
+            <img
+              id="gallery-main"
+              src={allImages[0]}
+              alt={titleEn}
+              class="w-full h-full object-cover object-top"
+            />
+            {allImages.length > 1 && (
+              <>
+                <button id="gallery-prev" aria-label="Previous" class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 text-white hover:bg-black/80 transition-colors">
+                  <Icon name="lucide:chevron-left" class="w-4 h-4" />
+                </button>
+                <button id="gallery-next" aria-label="Next" class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 text-white hover:bg-black/80 transition-colors">
+                  <Icon name="lucide:chevron-right" class="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </div>
+
+          {allImages.length > 1 && (
+            <div class="flex gap-2 mt-3 overflow-x-auto pb-1">
+              {allImages.map((src, i) => (
+                <button
+                  data-thumb={i}
+                  class={`thumb-btn shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === 0 ? 'border-blue-400' : 'border-white/10 opacity-60 hover:opacity-100'}`}
+                >
+                  <img src={src} alt={`Screenshot ${i + 1}`} class="w-full h-full object-cover object-top" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <!-- Description -->
+      {(descEn || descId) && (
+        <div class="mb-10 detail-in" style="--delay:0.15s">
+          <h2 class="text-xs font-semibold uppercase tracking-widest text-white/40 mb-3">About</h2>
+          <p class="text-base text-gray-300 leading-relaxed i18n-en">{descEn}</p>
+          <p class="text-base text-gray-300 leading-relaxed i18n-id">{descId}</p>
+        </div>
+      )}
+
+      <!-- Tech stack -->
+      {skills.length > 0 && (
+        <div class="mb-12 detail-in" style="--delay:0.2s">
+          <h2 class="text-xs font-semibold uppercase tracking-widest text-white/40 mb-4">Tech Stack</h2>
+          <div class="flex flex-wrap gap-2">
+            {skills.map(skill => (
+              <span class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-sm text-gray-300">
+                <Icon name={skill.icon} class="w-4 h-4" style={`color: ${skill.color}`} />
+                {skill.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Related projects -->
+      {related.length > 0 && (
+        <div class="detail-in" style="--delay:0.25s">
+          <div class="border-t border-white/8 pt-10">
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-white/40 mb-6">Related Projects</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {related.map(p => <ProjectCard project={p} />)}
+            </div>
+          </div>
+        </div>
+      )}
+
+    </main>
+
+    <Footer />
+
+  </body>
+</html>
+
+<script>
+  // Gallery navigation
+  const images: string[] = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-thumb]'))
+    .map(btn => btn.querySelector('img')?.src ?? '');
+
+  if (images.length > 1) {
+    const mainImg = document.getElementById('gallery-main') as HTMLImageElement | null;
+    const thumbBtns = document.querySelectorAll<HTMLButtonElement>('[data-thumb]');
+    const prevBtn = document.getElementById('gallery-prev');
+    const nextBtn = document.getElementById('gallery-next');
+    let current = 0;
+
+    function goTo(idx: number) {
+      current = (idx + images.length) % images.length;
+      if (mainImg) mainImg.src = images[current];
+      thumbBtns.forEach((btn, i) => {
+        const isActive = i === current;
+        btn.className = `thumb-btn shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${
+          isActive ? 'border-blue-400 opacity-100' : 'border-white/10 opacity-60 hover:opacity-100'
+        }`;
+      });
+    }
+
+    thumbBtns.forEach(btn => {
+      btn.addEventListener('click', () => goTo(Number(btn.dataset.thumb)));
+    });
+    prevBtn?.addEventListener('click', () => goTo(current - 1));
+    nextBtn?.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+  }
+</script>
+
+<style>
+  .detail-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fade-up 0.6s ease forwards;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes fade-up {
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
