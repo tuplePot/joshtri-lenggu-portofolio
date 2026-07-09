@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import Heading from '@/components/ui/Heading.astro';
 import Paragraph from '@/components/ui/Paragraph.astro';
+import AskAIButton from '@/components/ai/AskAIButton.astro';
 
 interface Skill {
   name: string
@@ -77,6 +78,14 @@ const row2 = skills.slice(half);
               <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
               Full-Stack
             </div>
+          </div>
+
+          <div class="mt-6">
+            <AskAIButton
+              question="Which technologies does Josh use the most, and which does he recommend learning?"
+              labelEn="Ask AI about the stack"
+              labelId="Tanya AI soal teknologi"
+            />
           </div>
         </div>
       </div>

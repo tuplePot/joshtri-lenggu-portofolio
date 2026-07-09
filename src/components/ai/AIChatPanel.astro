@@ -1,0 +1,77 @@
+---
+import { Icon } from 'astro-icon/components';
+// Presentational chat sidebar. All behaviour is wired by the controller in
+// AIAssistant.astro via these element IDs — this file stays markup-only.
+---
+
+<!-- Backdrop (mobile / click-away) -->
+<div
+  id="ai-backdrop"
+  class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"
+></div>
+
+<!-- Sidebar -->
+<aside
+  id="ai-panel"
+  class="fixed top-0 right-0 z-[70] h-full w-full sm:w-[420px] max-w-full translate-x-full transition-transform duration-300 ease-out flex flex-col bg-[#0a0a14]/95 backdrop-blur-xl border-l border-white/10 shadow-2xl"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Josh AI assistant"
+>
+  <!-- Header -->
+  <header class="flex items-center gap-3 px-5 py-4 border-b border-white/10 shrink-0">
+    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
+      <Icon name="lucide:sparkles" class="w-4 h-4" />
+    </span>
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-semibold text-white leading-tight">Josh AI</p>
+      <p class="text-[11px] text-emerald-400 leading-tight flex items-center gap-1">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+        <span class="i18n-en">Portfolio assistant</span>
+        <span class="i18n-id">Asisten portofolio</span>
+      </p>
+    </div>
+    <button id="ai-close" aria-label="Close" class="text-white/50 hover:text-white transition-colors p-1">
+      <Icon name="lucide:x" class="w-5 h-5" />
+    </button>
+  </header>
+
+  <!-- Messages -->
+  <div id="ai-messages" class="flex-1 overflow-y-auto px-4 py-5 space-y-4 ai-scroll">
+    <!-- Greeting -->
+    <div class="ai-msg ai-msg--bot">
+      <div class="ai-bubble ai-bubble--bot">
+        <span class="i18n-en">Hi! I'm Josh's portfolio assistant. Ask me about his projects, skills, experience, or architecture.</span>
+        <span class="i18n-id">Hai! Saya asisten portofolio Josh. Tanya saya tentang proyek, skill, pengalaman, atau arsitekturnya.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggested questions -->
+  <div id="ai-suggestions" class="px-4 pb-2 flex flex-wrap gap-2"></div>
+
+  <!-- Input -->
+  <form id="ai-form" class="px-4 pt-2 pb-4 border-t border-white/10 shrink-0">
+    <div class="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/5 focus-within:border-blue-400/40 transition-colors px-3 py-2">
+      <textarea
+        id="ai-input"
+        rows="1"
+        maxlength="500"
+        placeholder="Ask about a project..."
+        class="flex-1 resize-none bg-transparent text-sm text-white placeholder-gray-500 outline-none max-h-28 leading-relaxed"
+      ></textarea>
+      <button
+        id="ai-send"
+        type="submit"
+        aria-label="Send"
+        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+      >
+        <Icon name="lucide:arrow-up" class="w-4 h-4" />
+      </button>
+    </div>
+    <p class="mt-2 text-center text-[10px] text-gray-600">
+      <span class="i18n-en">AI answers only from Josh's portfolio data.</span>
+      <span class="i18n-id">AI menjawab hanya dari data portofolio Josh.</span>
+    </p>
+  </form>
+</aside>

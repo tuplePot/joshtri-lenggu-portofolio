@@ -4,6 +4,7 @@ import Heading from '@/components/ui/Heading.astro';
 import Paragraph from '@/components/ui/Paragraph.astro';
 import Href from '@/components/ui/Href.astro';
 import Button from '@/components/ui/Button.astro';
+import AskAIButton from '@/components/ai/AskAIButton.astro';
 
 const rolesEn = ['Full-Stack Developer', 'Frontend Engineer', 'Backend Engineer'];
 const rolesId = ['Developer Full-Stack', 'Frontend Engineer', 'Backend Engineer'];
@@ -97,6 +98,15 @@ const socialLinks = [
           <span class="i18n-id">Lihat Karya Saya</span>
           <Icon name="lucide:arrow-down" class="w-4 h-4" />
         </a>
+      </div>
+
+      <!-- AI assistant entry point -->
+      <div class="mt-5 flex justify-center lg:justify-start">
+        <AskAIButton
+          question="Tell me about Josh."
+          labelEn="Ask AI about Josh"
+          labelId="Tanya AI tentang Josh"
+        />
       </div>
     </div>
   </div>
