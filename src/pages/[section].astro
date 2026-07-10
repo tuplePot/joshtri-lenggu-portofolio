@@ -1,0 +1,55 @@
+---
+import OnePage from '@/components/layout/OnePage.astro';
+
+// Indexable URLs for each homepage section. Each renders the full one-page
+// site and jumps to its section on load — no redirect, so Google can crawl it.
+export function getStaticPaths() {
+  const sections = [
+    {
+      section: 'about',
+      title: 'About Joshtri Lenggu — Full-Stack Developer & Software Engineer',
+      description:
+        'Learn about Joshtri Lenggu, a Full-Stack Developer and Software Engineer from North Jakarta, Indonesia, building for the web since 2020.',
+    },
+    {
+      section: 'skills',
+      title: 'Skills & Tech Stack — Joshtri Lenggu',
+      description:
+        'Technologies Joshtri Lenggu works with: React, Next.js, Vue.js, Node.js, Laravel, TypeScript, PostgreSQL, MongoDB, Docker, and more.',
+    },
+    {
+      section: 'projects',
+      title: 'Projects — Joshtri Lenggu | Web Developer Portfolio',
+      description:
+        'Selected projects by Joshtri Lenggu — government platforms, internal tools, and personal experiments built with React, Next.js, Node.js, and Laravel.',
+    },
+    {
+      section: 'experience',
+      title: 'Experience — Joshtri Lenggu, Full-Stack Developer',
+      description:
+        'Work experience and education of Joshtri Lenggu, Full-Stack Developer and Software Engineer — building web applications since 2020.',
+    },
+    {
+      section: 'contact',
+      title: 'Contact — Joshtri Lenggu',
+      description:
+        'Get in touch with Joshtri Lenggu — email, WhatsApp, LinkedIn, or GitHub. Open to freelance and full-time opportunities.',
+    },
+  ];
+
+  return sections.map(({ section, title, description }) => ({
+    params: { section },
+    props: { title, description },
+  }));
+}
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const { section } = Astro.params;
+---
+
+<OnePage title={title} description={description} scrollTo={section} />

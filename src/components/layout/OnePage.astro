@@ -1,0 +1,105 @@
+---
+import BaseHead from '@/components/BaseHead.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Hero from '@/components/sections/Hero.astro';
+import Skills from '@/components/sections/Skills.astro';
+import Projects from '@/components/sections/Projects.astro';
+import Experience from '@/components/sections/Experience.astro';
+import About from '@/components/sections/About.astro';
+import Contact from '@/components/sections/Contact.astro';
+import FloatingScrollToTop from '@/components/ui/FloatingScrollToTop.astro';
+import FloatingWhatsApp from '@/components/ui/FloatingWhatsApp.astro';
+import GalaxyCanvas from '@/components/ui/GalaxyCanvas.astro';
+import AIAssistant from '@/components/ai/AIAssistant.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
+import { personSchema, websiteSchema } from '@/utils/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  /* Section id to jump to on load (e.g. "about") — used by the /about, /skills, ... routes */
+  scrollTo?: string;
+}
+
+const { title, description, scrollTo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+    <link rel="preload" as="image" href="/profile-2.jpg" fetchpriority="high" />
+    <JsonLd schema={personSchema} />
+    <JsonLd schema={websiteSchema} />
+  </head>
+  <body class="bg-black text-white">
+
+    <!-- Page loader — fades out once DOM is ready -->
+    <div id="page-loader" class="fixed inset-0 z-[300] bg-[#050512] flex items-center justify-center pointer-events-none">
+      <div class="flex gap-2.5">
+        <span class="loader-dot w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+        <span class="loader-dot w-2.5 h-2.5 rounded-full bg-blue-400" style="animation-delay:0.2s"></span>
+        <span class="loader-dot w-2.5 h-2.5 rounded-full bg-blue-400" style="animation-delay:0.4s"></span>
+      </div>
+    </div>
+
+    <!-- Single galaxy canvas fixed behind all sections -->
+    <div class="fixed inset-0 -z-10 w-full h-full">
+      <GalaxyCanvas />
+    </div>
+    <Header />
+    <main>
+      <Hero />
+      <About />
+      <Skills />
+      <Projects />
+      <Experience />
+      <Contact />
+    </main>
+    <Footer />
+    <FloatingScrollToTop />
+    <FloatingWhatsApp phone="6285298389192" message="Hi Joshtri! I'd like to get in touch." />
+    <AIAssistant />
+
+    {scrollTo && (
+      <script is:inline define:vars={{ scrollTo }}>
+        // Jump straight to the target section (behind the loader overlay),
+        // then rewrite the URL to the hash form so it reads like /#section.
+        var target = document.getElementById(scrollTo);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+          history.replaceState(null, '', '/#' + scrollTo);
+        }
+      </script>
+    )}
+  </body>
+</html>
+
+<script>
+  const loader = document.getElementById('page-loader');
+  if (loader) {
+    loader.style.transition = 'opacity 0.6s ease';
+    const hide = () => {
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 650);
+      }, 500);
+    };
+    if (document.readyState === 'complete') {
+      hide();
+    } else {
+      window.addEventListener('load', hide, { once: true });
+    }
+  }
+</script>
+
+<style>
+  @keyframes dot-pulse {
+    0%, 80%, 100% { transform: scale(0.55); opacity: 0.35; }
+    40%           { transform: scale(1);    opacity: 1;    }
+  }
+  .loader-dot {
+    animation: dot-pulse 1.3s ease-in-out infinite;
+  }
+</style>
