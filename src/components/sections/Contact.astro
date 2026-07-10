@@ -1,7 +1,9 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
 import Heading from '@/components/ui/Heading.astro';
 import Paragraph from '@/components/ui/Paragraph.astro';
+import profilePhoto from '@/assets/profile-1.jpg';
 
 const contactLinks = [
   {
@@ -70,7 +72,14 @@ const contactLinks = [
     <div class="contact-avatar flex justify-center mb-10">
       <div class="relative">
         <div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-white/10">
-          <img src="/profile-1.jpg" alt="Joshtri Lenggu" class="w-full h-full object-cover" />
+          <Image
+            src={profilePhoto}
+            alt="Joshtri Lenggu, Full-Stack Developer — profile photo"
+            width={160}
+            height={160}
+            loading="lazy"
+            class="w-full h-full object-cover"
+          />
         </div>
         <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 border-2 border-black flex items-center justify-center">
           <span class="w-2 h-2 rounded-full bg-green-300 animate-pulse"></span>

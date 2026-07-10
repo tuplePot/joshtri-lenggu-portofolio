@@ -12,13 +12,18 @@ import FloatingScrollToTop from '../components/ui/FloatingScrollToTop.astro';
 import FloatingWhatsApp from '../components/ui/FloatingWhatsApp.astro';
 import GalaxyCanvas from '../components/ui/GalaxyCanvas.astro';
 import AIAssistant from '../components/ai/AIAssistant.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import JsonLd from '../components/seo/JsonLd.astro';
+import { HOME_TITLE, SITE_DESCRIPTION } from '../consts';
+import { personSchema, websiteSchema } from '../utils/schema';
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <BaseHead title={HOME_TITLE} description={SITE_DESCRIPTION} />
+    <link rel="preload" as="image" href="/profile-2.jpg" fetchpriority="high" />
+    <JsonLd schema={personSchema} />
+    <JsonLd schema={websiteSchema} />
   </head>
   <body class="bg-black text-white">
 

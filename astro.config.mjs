@@ -5,10 +5,11 @@ import { defineConfig, fontProviders } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
 import { fileURLToPath } from "node:url";
+import { SITE_URL } from "./src/consts";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://joshtri.dev", // ganti dengan domain asli saat deploy
+  site: SITE_URL,
   integrations: [sitemap(), icon()],
   vite: {
     plugins: [tailwindcss()],

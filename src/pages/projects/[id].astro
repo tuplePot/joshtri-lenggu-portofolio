@@ -5,9 +5,11 @@ import Footer from '@/components/layout/Footer.astro';
 import GalaxyCanvas from '@/components/ui/GalaxyCanvas.astro';
 import ProjectCard from '@/components/ui/ProjectCard.astro';
 import type { Project } from '@/components/ui/ProjectCard.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
 import { fetchApi } from '@/utils/api';
 import { getFileUrl } from '@/utils/appwrite';
-import { SITE_TITLE } from '@/consts';
+import { SITE_TITLE, SITE_URL } from '@/consts';
+import { breadcrumbSchema } from '@/utils/schema';
 
 export async function getStaticPaths() {
   const projects = await fetchApi<Project[]>('/api/projects') ?? [];
@@ -62,6 +64,15 @@ const typeConfig: Record<string, { label: string; cls: string }> = {
 const typeInfo = project.type ? typeConfig[project.type] : null;
 
 const skills = project.skillIds ?? [];
+
+const appwriteEndpoint = import.meta.env.PUBLIC_APPWRITE_ENDPOINT;
+const appwriteOrigin = appwriteEndpoint ? new URL(appwriteEndpoint).origin : null;
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: SITE_URL },
+  { name: 'Projects', url: `${SITE_URL}/#projects` },
+  { name: titleEn },
+]);
 ---
 
 <!doctype html>
@@ -72,6 +83,8 @@ const skills = project.skillIds ?? [];
       description={descEn || `${titleEn} project by Joshtri Lenggu`}
       ogImage={thumbnailUrl ?? undefined}
     />
+    {appwriteOrigin && <link rel="preconnect" href={appwriteOrigin} />}
+    <JsonLd schema={breadcrumbs} />
   </head>
   <body class="bg-black text-white min-h-screen">
 
@@ -157,7 +170,9 @@ const skills = project.skillIds ?? [];
             <img
               id="gallery-main"
               src={allImages[0]}
-              alt={titleEn}
+              alt={`${titleEn} — project screenshot`}
+              fetchpriority="high"
+              decoding="async"
               class="w-full h-full object-cover object-top"
             />
             {allImages.length > 1 && (
@@ -179,7 +194,7 @@ const skills = project.skillIds ?? [];
                   data-thumb={i}
                   class={`thumb-btn shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === 0 ? 'border-blue-400' : 'border-white/10 opacity-60 hover:opacity-100'}`}
                 >
-                  <img src={src} alt={`Screenshot ${i + 1}`} class="w-full h-full object-cover object-top" loading="lazy" />
+                  <img src={src} alt={`${titleEn} — screenshot ${i + 1}`} class="w-full h-full object-cover object-top" loading="lazy" />
                 </button>
               ))}
             </div>
