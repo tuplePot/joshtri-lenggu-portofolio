@@ -45,7 +45,6 @@ export const websiteSchema = {
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
   name: `${SITE_TITLE} Portfolio`,
-  alternateName: 'Josh Trilenggu Portfolio',
   url: SITE_URL,
   description: SITE_DESCRIPTION,
   inLanguage: ['en', 'id'],
