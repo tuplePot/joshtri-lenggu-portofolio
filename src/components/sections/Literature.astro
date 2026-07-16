@@ -1,0 +1,107 @@
+---
+import { Icon } from 'astro-icon/components';
+import Heading from '@/components/ui/Heading.astro';
+import Paragraph from '@/components/ui/Paragraph.astro';
+import ArticleCard from '@/components/ui/ArticleCard.astro';
+import { fetchBlogPosts, blogCategoryUrl } from '@/utils/blog';
+
+// Only surface a curated category on the portfolio — "technology".
+const CATEGORY = 'technology';
+const posts = await fetchBlogPosts(CATEGORY, 6);
+const categoryHref = blogCategoryUrl(CATEGORY);
+---
+
+<section id="literature" class="relative py-24 overflow-hidden">
+  <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10">
+
+    <!-- Header -->
+    <div class="lit-header flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+      <div>
+        <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-blue-400 uppercase mb-3">
+          <span class="w-4 h-px bg-blue-400/60"></span>
+          <span class="i18n-en">Writing & Sharing</span>
+          <span class="i18n-id">Menulis & Berbagi</span>
+          <span class="w-4 h-px bg-blue-400/60"></span>
+        </span>
+        <Heading level="h2" class="text-white drop-shadow-[0_0_24px_rgba(100,150,255,0.25)]">
+          <span class="i18n-en">Literature</span>
+          <span class="i18n-id">Literatur</span>
+        </Heading>
+        <Paragraph color="muted" class="mt-2 max-w-md">
+          <span class="i18n-en">Notes and insights I write to share what I learn — a selection from the technology category on my blog.</span>
+          <span class="i18n-id">Catatan dan wawasan yang saya tulis untuk berbagi apa yang saya pelajari — pilihan dari kategori teknologi di blog saya.</span>
+        </Paragraph>
+      </div>
+
+      <a
+        href={categoryHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm text-sm text-gray-400 hover:text-white hover:border-blue-400/40 hover:bg-white/10 transition-all duration-200 shrink-0"
+      >
+        <Icon name="lucide:book-open" class="w-4 h-4" />
+        <span class="i18n-en">Read the blog</span>
+        <span class="i18n-id">Kunjungi blog</span>
+        <Icon name="lucide:arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+      </a>
+    </div>
+
+    {posts.length > 0 ? (
+      <div class="lit-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {posts.map((post) => (
+          <ArticleCard post={post} typeSlug={CATEGORY} />
+        ))}
+      </div>
+    ) : (
+      <!-- Empty / offline state -->
+      <div class="lit-grid text-center py-16 rounded-2xl border border-dashed border-white/10 bg-white/[0.02]">
+        <Icon name="lucide:book-dashed" class="w-10 h-10 text-gray-600 mx-auto mb-3" />
+        <p class="text-sm text-gray-500">
+          <span class="i18n-en">No writings to show right now — check back soon.</span>
+          <span class="i18n-id">Belum ada tulisan untuk ditampilkan — nantikan segera.</span>
+        </p>
+        <a
+          href={categoryHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 mt-4 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+        >
+          <span class="i18n-en">Visit the blog</span>
+          <span class="i18n-id">Kunjungi blog</span>
+          <Icon name="lucide:arrow-up-right" class="w-3.5 h-3.5" />
+        </a>
+      </div>
+    )}
+
+  </div>
+</section>
+
+<script>
+  const targets = document.querySelectorAll<HTMLElement>('.lit-header, .lit-grid');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('lit--in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  targets.forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.08}s`;
+    io.observe(el);
+  });
+</script>
+
+<style>
+  .lit-header,
+  .lit-grid {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .lit--in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

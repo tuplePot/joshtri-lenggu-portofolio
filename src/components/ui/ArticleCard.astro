@@ -1,0 +1,82 @@
+---
+import { Icon } from 'astro-icon/components';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { blogPostUrl, type BlogPost } from '@/utils/blog';
+
+interface Props {
+  post: BlogPost;
+  /** Category slug used to build the outbound blog URL, e.g. "technology". */
+  typeSlug: string;
+}
+
+const { post, typeSlug } = Astro.props;
+
+const href = blogPostUrl(typeSlug, post.slug);
+const date = new Date(post.createdAt);
+const labelColor = post.label?.color ?? '#60a5fa';
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group flex flex-col rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden hover:border-blue-400/35 hover:bg-white/8 hover:shadow-[0_0_40px_rgba(59,130,246,0.12)] transition-all duration-300"
+>
+  <!-- Cover -->
+  <div class="relative h-40 overflow-hidden bg-[#080810]">
+    {post.coverImage ? (
+      <img
+        src={post.coverImage}
+        alt={`${post.title} — cover`}
+        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+      />
+    ) : (
+      <div class="w-full h-full flex items-center justify-center opacity-30">
+        <Icon name="lucide:file-text" class="w-9 h-9 text-gray-500" />
+      </div>
+    )}
+
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+
+    {post.label && (
+      <span
+        class="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-sm border text-[10px] font-semibold tracking-wide"
+        style={`color:${labelColor}; border-color:${labelColor}55`}
+      >
+        <span class="w-1.5 h-1.5 rounded-full" style={`background:${labelColor}`}></span>
+        {post.label.name}
+      </span>
+    )}
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-col flex-1 p-5 gap-3">
+    <h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-blue-100 transition-colors">
+      {post.title}
+    </h3>
+
+    <p class="text-xs text-gray-400 leading-relaxed line-clamp-3 flex-1">
+      {post.excerpt}
+    </p>
+
+    <!-- Meta row -->
+    <div class="flex items-center justify-between pt-2 border-t border-white/5 text-[11px] text-gray-500">
+      <span class="flex items-center gap-1.5">
+        <Icon name="lucide:calendar" class="w-3 h-3" />
+        <FormattedDate date={date} />
+      </span>
+      <span class="flex items-center gap-3">
+        <span class="flex items-center gap-1">
+          <Icon name="lucide:eye" class="w-3 h-3" />
+          {post.viewsCount}
+        </span>
+        <span class="flex items-center gap-1 text-blue-400/80 group-hover:text-blue-400 transition-colors">
+          <span class="i18n-en">Read</span>
+          <span class="i18n-id">Baca</span>
+          <Icon name="lucide:arrow-up-right" class="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </span>
+      </span>
+    </div>
+  </div>
+</a>
