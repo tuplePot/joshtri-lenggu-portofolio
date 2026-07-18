@@ -66,13 +66,8 @@ const { title, description, scrollTo } = Astro.props;
 
     {scrollTo && (
       <script is:inline define:vars={{ scrollTo }}>
-        // Jump straight to the target section (behind the loader overlay),
-        // then rewrite the URL to the hash form so it reads like /#section.
         var target = document.getElementById(scrollTo);
-        if (target) {
-          target.scrollIntoView({ behavior: 'instant', block: 'start' });
-          history.replaceState(null, '', '/#' + scrollTo);
-        }
+        if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
       </script>
     )}
   </body>
