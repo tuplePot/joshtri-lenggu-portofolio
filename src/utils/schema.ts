@@ -22,7 +22,7 @@ export const personSchema = {
   sameAs: SOCIAL_LINKS,
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'North Jakarta',
+    addressLocality: 'Jakarta',
     addressRegion: 'Jakarta',
     addressCountry: 'ID',
   },
