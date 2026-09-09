@@ -5,7 +5,7 @@ export const SITE_TITLE = "Joshtri Lenggu";
 export const HOME_TITLE =
 	"Joshtri Lenggu — Full-Stack Developer & Software Engineer";
 export const SITE_DESCRIPTION =
-	"Portfolio of Joshtri Lenggu, Full-Stack Developer and Software Engineer in Jakarta, Indonesia. Building web apps with React, Next.js, Node.js, and Laravel. Open to work.";
+	"Full-Stack Developer & Software Engineer in Jakarta. Building web apps with React, Next.js, Node.js, and Laravel. Open to work.";
 export const SITE_AUTHOR = "Joshtri Lenggu";
 export const ALTERNATE_NAMES = ["Arpakhsad Joshtri Sugiatma Lenggu"];
 export const JOB_TITLE = "Full-Stack Developer";
