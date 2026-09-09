@@ -1,0 +1,330 @@
+@import "tailwindcss";
+
+@theme inline {
+	--font-sans: var(--font-atkinson), sans-serif;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	background-color: #000;
+	color: #fff;
+	font-family: var(--font-atkinson), sans-serif;
+}
+
+/* ── Scroll-reveal helper ─────────────────────────────────────────────
+   Elements start hidden + offset, then `.reveal--in` (added by the
+   ScrollReveal client component on intersection) animates them in. */
+.reveal {
+	opacity: 0;
+	transform: translateY(28px);
+	transition:
+		opacity 0.75s ease,
+		transform 0.75s ease;
+}
+.reveal--in {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* ── Page loader ──────────────────────────────────────────────────── */
+@keyframes dot-pulse {
+	0%,
+	80%,
+	100% {
+		transform: scale(0.55);
+		opacity: 0.35;
+	}
+	40% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+.loader-dot {
+	animation: dot-pulse 1.3s ease-in-out infinite;
+}
+
+/* ── Terminal cursor (About) ──────────────────────────────────────── */
+.terminal-cursor {
+	display: inline-block;
+	width: 8px;
+	height: 1em;
+	background: rgba(255, 255, 255, 0.75);
+	animation: cur-blink 1s step-end infinite;
+	vertical-align: text-bottom;
+	margin-left: 1px;
+}
+@keyframes cur-blink {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+}
+
+/* ── Skills marquee ───────────────────────────────────────────────── */
+.skill-orb::after {
+	content: "";
+	position: absolute;
+	inset: -2px;
+	border-radius: 9999px;
+	opacity: 0;
+	box-shadow: 0 0 18px 4px rgba(150, 150, 255, 0.35);
+	transition: opacity 0.3s ease;
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+	.skill-orb::after {
+		box-shadow:
+			0 0 18px 5px color-mix(in srgb, var(--gc) 50%, transparent),
+			inset 0 0 10px color-mix(in srgb, var(--gc) 18%, transparent);
+	}
+}
+.group:hover .skill-orb::after {
+	opacity: 1;
+}
+
+@keyframes scroll-left {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+@keyframes scroll-right {
+	from {
+		transform: translateX(-50%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+.marquee-left {
+	animation: scroll-left 32s linear infinite;
+}
+.marquee-right {
+	animation: scroll-right 32s linear infinite;
+}
+.marquee-left:hover,
+.marquee-right:hover {
+	animation-play-state: paused;
+}
+
+/* ── Projects scroll area ─────────────────────────────────────────── */
+.projects-scroll {
+	-webkit-mask-image: linear-gradient(
+		to bottom,
+		transparent 0%,
+		black 10%,
+		black 90%,
+		transparent 100%
+	);
+	mask-image: linear-gradient(
+		to bottom,
+		transparent 0%,
+		black 10%,
+		black 90%,
+		transparent 100%
+	);
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+.projects-scroll::-webkit-scrollbar {
+	width: 3px;
+}
+.projects-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+.projects-scroll::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 999px;
+}
+.projects-scroll::-webkit-scrollbar-thumb:hover {
+	background: rgba(100, 150, 255, 0.25);
+}
+.proj-years-scroll::-webkit-scrollbar {
+	display: none;
+}
+
+/* ── Project detail fade-up ───────────────────────────────────────── */
+.detail-in {
+	opacity: 0;
+	transform: translateY(20px);
+	animation: fade-up 0.6s ease forwards;
+	animation-delay: var(--delay, 0s);
+}
+@keyframes fade-up {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ── AI assistant chat ────────────────────────────────────────────── */
+.ai-bubble {
+	max-width: 85%;
+	padding: 10px 14px;
+	border-radius: 16px;
+	font-size: 13px;
+	line-height: 1.65;
+	word-wrap: break-word;
+	overflow-wrap: anywhere;
+}
+.ai-bubble--user {
+	background: linear-gradient(to bottom right, #2563eb, #4f46e5);
+	color: #fff;
+	border-bottom-right-radius: 4px;
+}
+.ai-bubble--bot {
+	background: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	color: #e5e7eb;
+	border-bottom-left-radius: 4px;
+}
+.ai-bubble--error {
+	border-color: rgba(248, 113, 113, 0.3);
+	color: #fca5a5;
+}
+
+/* Markdown inside bot bubbles */
+.ai-bubble--bot > *:first-child {
+	margin-top: 0;
+}
+.ai-bubble--bot > *:last-child {
+	margin-bottom: 0;
+}
+.ai-bubble--bot p {
+	margin: 0 0 8px;
+}
+.ai-bubble--bot strong {
+	color: #fff;
+	font-weight: 600;
+}
+.ai-bubble--bot h1,
+.ai-bubble--bot h2,
+.ai-bubble--bot h3 {
+	font-weight: 600;
+	color: #fff;
+	font-size: 13px;
+	margin: 8px 0 4px;
+}
+.ai-bubble--bot ul,
+.ai-bubble--bot ol {
+	margin: 4px 0 8px;
+	padding-left: 18px;
+}
+.ai-bubble--bot li {
+	margin: 2px 0;
+}
+.ai-bubble--bot a {
+	color: #60a5fa;
+	text-decoration: underline;
+}
+.ai-bubble--bot code {
+	background: rgba(255, 255, 255, 0.1);
+	padding: 1px 5px;
+	border-radius: 5px;
+	font-size: 12px;
+	font-family: ui-monospace, monospace;
+}
+.ai-bubble--bot pre {
+	background: #05050c;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 10px;
+	padding: 10px 12px;
+	overflow-x: auto;
+	margin: 6px 0;
+}
+.ai-bubble--bot pre code {
+	background: none;
+	padding: 0;
+}
+.ai-bubble--bot table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 8px 0;
+	font-size: 12px;
+	display: block;
+	overflow-x: auto;
+}
+.ai-bubble--bot th,
+.ai-bubble--bot td {
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 6px 10px;
+	text-align: left;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.ai-bubble--bot td {
+	white-space: normal;
+	min-width: 120px;
+}
+.ai-bubble--bot th {
+	background: rgba(255, 255, 255, 0.06);
+	color: #fff;
+	font-weight: 600;
+}
+
+/* Typing dots */
+.ai-dots {
+	display: inline-flex;
+	gap: 4px;
+	padding: 2px 0;
+}
+.ai-dots i {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.5);
+	animation: ai-blink 1.3s infinite;
+}
+.ai-dots i:nth-child(2) {
+	animation-delay: 0.2s;
+}
+.ai-dots i:nth-child(3) {
+	animation-delay: 0.4s;
+}
+@keyframes ai-blink {
+	0%,
+	80%,
+	100% {
+		opacity: 0.3;
+	}
+	40% {
+		opacity: 1;
+	}
+}
+
+/* Suggestion chips */
+.ai-chip {
+	font-size: 11px;
+	padding: 6px 10px;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.04);
+	color: #cbd5e1;
+	transition: all 0.2s;
+	text-align: left;
+}
+.ai-chip:hover {
+	border-color: rgba(96, 165, 250, 0.4);
+	color: #fff;
+	background: rgba(96, 165, 250, 0.08);
+}
+
+/* Scrollbar */
+.ai-scroll {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+.ai-scroll::-webkit-scrollbar {
+	width: 4px;
+}
+.ai-scroll::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 999px;
+}
