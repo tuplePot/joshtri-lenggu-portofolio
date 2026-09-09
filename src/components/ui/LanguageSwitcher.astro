@@ -1,0 +1,53 @@
+---
+// EN/ID toggle. Can be rendered multiple times (desktop nav + mobile panel);
+// all instances stay in sync via the shared script below.
+---
+
+<div
+  class="lang-switch flex items-center gap-0.5 p-0.5 rounded-full border border-white/10 bg-white/5"
+  role="group"
+  aria-label="Switch language"
+>
+  <button
+    type="button"
+    data-set-lang="en"
+    class="lang-btn px-2 py-1 text-[11px] font-semibold tracking-wide rounded-full text-white/50 hover:text-white transition-all duration-200"
+    aria-label="Switch to English"
+  >
+    EN
+  </button>
+  <button
+    type="button"
+    data-set-lang="id"
+    class="lang-btn px-2 py-1 text-[11px] font-semibold tracking-wide rounded-full text-white/50 hover:text-white transition-all duration-200"
+    aria-label="Ganti ke Bahasa Indonesia"
+  >
+    ID
+  </button>
+</div>
+
+<script>
+  function applyLang(lang: string) {
+    document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.setAttribute('lang', lang);
+    try { localStorage.setItem('lang', lang); } catch {}
+
+    document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((btn) => {
+      btn.classList.toggle('lang-active', btn.dataset.setLang === lang);
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.setLang ?? 'en'));
+  });
+
+  // Highlight the button for the language set by BaseHead's inline script
+  applyLang(document.documentElement.getAttribute('data-lang') ?? 'en');
+</script>
+
+<style is:global>
+  .lang-btn.lang-active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+</style>

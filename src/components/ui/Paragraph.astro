@@ -1,0 +1,25 @@
+---
+interface Props {
+  size?: 'sm' | 'base' | 'lg';
+  color?: 'default' | 'muted' | 'subtle';
+  class?: string;
+}
+
+const { size = 'base', color = 'default', class: className = '' } = Astro.props;
+
+const sizeMap = {
+  sm:   'text-base',
+  base: 'text-lg',
+  lg:   'text-xl sm:text-2xl',
+};
+
+const colorMap = {
+  default: 'text-white',
+  muted:   'text-gray-400',
+  subtle:  'text-white/60',
+};
+---
+
+<p class={`leading-relaxed ${sizeMap[size]} ${colorMap[color]} ${className}`}>
+  <slot />
+</p>

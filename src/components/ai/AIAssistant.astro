@@ -1,0 +1,279 @@
+---
+import AIChatButton from './AIChatButton.astro';
+import AIChatPanel from './AIChatPanel.astro';
+// Top-level AI assistant. Compose once (in index.astro). The presentational
+// button + panel stay separate; this file owns the controller that wires them
+// and listens for `ai-assistant:ask` events fired by section triggers.
+---
+
+<AIChatButton />
+<AIChatPanel />
+
+<script>
+  import { askAI, getSuggestions, AiError } from '@/utils/ai';
+  import { marked } from 'marked';
+  import DOMPurify from 'dompurify';
+
+  marked.setOptions({ breaks: true, gfm: true });
+
+  const btn = document.getElementById('ai-chat-btn');
+  const panel = document.getElementById('ai-panel');
+  const backdrop = document.getElementById('ai-backdrop');
+  const closeBtn = document.getElementById('ai-close');
+  const messagesEl = document.getElementById('ai-messages');
+  const form = document.getElementById('ai-form');
+  const input = document.getElementById('ai-input') as HTMLTextAreaElement | null;
+  const sendBtn = document.getElementById('ai-send') as HTMLButtonElement | null;
+  const suggestionsEl = document.getElementById('ai-suggestions');
+
+  let opened = false;
+  let busy = false;
+  let cachedSug: { en: string[]; id: string[] } | null = null;
+
+  const lang = (): 'en' | 'id' =>
+    (document.documentElement.getAttribute('data-lang') as 'en' | 'id') ?? 'en';
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const scroll = () => { if (messagesEl) messagesEl.scrollTop = messagesEl.scrollHeight; };
+
+  // Reveal the launcher after a short delay (mirrors the WhatsApp button).
+  setTimeout(() => {
+    btn?.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+    btn?.classList.add('opacity-100', 'translate-y-0');
+  }, 900);
+
+  function open() {
+    opened = true;
+    panel?.classList.remove('translate-x-full');
+    backdrop?.classList.remove('opacity-0', 'pointer-events-none');
+    loadSuggestions();
+    setTimeout(() => input?.focus(), 300);
+  }
+  function close() {
+    opened = false;
+    panel?.classList.add('translate-x-full');
+    backdrop?.classList.add('opacity-0', 'pointer-events-none');
+  }
+
+  btn?.addEventListener('click', () => (opened ? close() : open()));
+  closeBtn?.addEventListener('click', close);
+  backdrop?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && opened) close(); });
+
+  // ── Input handling ──────────────────────────────────────────────────
+  function setPlaceholder() {
+    if (input) input.placeholder = lang() === 'id' ? 'Tanya tentang proyek...' : 'Ask about a project...';
+  }
+  setPlaceholder();
+
+  input?.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 112) + 'px';
+  });
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(input.value); }
+  });
+  form?.addEventListener('submit', (e) => { e.preventDefault(); if (input) submit(input.value); });
+
+  // ── Suggestions ─────────────────────────────────────────────────────
+  const hasUserMessage = () => !!messagesEl?.querySelector('.ai-msg--user');
+
+  async function loadSuggestions() {
+    if (hasUserMessage()) return; // don't re-show once a conversation started
+    if (!cachedSug) cachedSug = await getSuggestions();
+    const list = cachedSug[lang()]?.length ? cachedSug[lang()] : cachedSug.en;
+    renderSuggestions(list ?? []);
+  }
+  function renderSuggestions(list: string[]) {
+    if (!suggestionsEl) return;
+    suggestionsEl.innerHTML = '';
+    list.slice(0, 4).forEach((q) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'ai-chip';
+      chip.textContent = q;
+      chip.addEventListener('click', () => submit(q));
+      suggestionsEl.appendChild(chip);
+    });
+  }
+
+  // ── Message rendering ───────────────────────────────────────────────
+  function addUser(text: string) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ai-msg--user';
+    const b = document.createElement('div');
+    b.className = 'ai-bubble ai-bubble--user';
+    b.textContent = text;
+    wrap.appendChild(b);
+    messagesEl?.appendChild(wrap);
+    scroll();
+  }
+
+  function addTyping() {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ai-msg--bot';
+    wrap.id = 'ai-typing';
+    wrap.innerHTML = '<div class="ai-bubble ai-bubble--bot"><span class="ai-dots"><i></i><i></i><i></i></span></div>';
+    messagesEl?.appendChild(wrap);
+    scroll();
+  }
+  const removeTyping = () => document.getElementById('ai-typing')?.remove();
+
+  function renderMarkdown(md: string): string {
+    const html = marked.parse(md) as string;
+    return DOMPurify.sanitize(html);
+  }
+
+  async function addBot(md: string) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ai-msg--bot';
+    const b = document.createElement('div');
+    b.className = 'ai-bubble ai-bubble--bot';
+    wrap.appendChild(b);
+    messagesEl?.appendChild(wrap);
+
+    // Typewriter on the plain-text form, then swap to rendered Markdown. Skip
+    // the typing pass for long answers to avoid a sluggish reveal.
+    const plain = md.replace(/\[(.*?)\]\(.*?\)/g, '$1').replace(/[#*`_>~]/g, '');
+    if (plain.length <= 700) {
+      const speed = plain.length > 350 ? 3 : 10;
+      for (let i = 0; i < plain.length; i++) {
+        b.textContent = plain.slice(0, i + 1);
+        if (i % 3 === 0) { scroll(); await sleep(speed); }
+      }
+    }
+    b.innerHTML = renderMarkdown(md);
+    b.querySelectorAll('a').forEach((a) => {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
+    });
+    scroll();
+  }
+
+  function addError(kind: 'rate' | 'net' | 'err') {
+    const copy = {
+      rate: { en: "I'm getting a lot of questions right now — please try again in a moment.", id: 'Sedang banyak pertanyaan — coba lagi sebentar lagi ya.' },
+      net: { en: "Couldn't reach the server. Check your connection and try again.", id: 'Tidak bisa menghubungi server. Periksa koneksi lalu coba lagi.' },
+      err: { en: 'Something went wrong. Please try again.', id: 'Terjadi kesalahan. Silakan coba lagi.' },
+    };
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-msg ai-msg--bot';
+    const b = document.createElement('div');
+    b.className = 'ai-bubble ai-bubble--bot ai-bubble--error';
+    b.textContent = copy[kind][lang()];
+    wrap.appendChild(b);
+    messagesEl?.appendChild(wrap);
+    scroll();
+  }
+
+  // ── Send flow ───────────────────────────────────────────────────────
+  async function submit(prompt: string) {
+    const text = prompt.trim();
+    if (!text || busy) return;
+    busy = true;
+    if (sendBtn) sendBtn.disabled = true;
+    if (suggestionsEl) suggestionsEl.innerHTML = '';
+    addUser(text);
+    if (input) { input.value = ''; input.style.height = 'auto'; }
+    addTyping();
+    try {
+      const res = await askAI(text);
+      removeTyping();
+      await addBot(res.answer);
+    } catch (e) {
+      removeTyping();
+      if (e instanceof AiError && e.status === 429) addError('rate');
+      else if (e instanceof AiError && e.status === 0) addError('net');
+      else addError('err');
+    } finally {
+      busy = false;
+      if (sendBtn) sendBtn.disabled = false;
+      input?.focus();
+    }
+  }
+
+  // ── Section triggers: any component can fire this to ask a question ──
+  window.addEventListener('ai-assistant:ask', (e: Event) => {
+    const q = (e as CustomEvent<{ question?: string }>).detail?.question;
+    if (!q) return;
+    open();
+    submit(q);
+  });
+
+  // React to language toggle: update placeholder + suggestion language.
+  new MutationObserver(() => { setPlaceholder(); loadSuggestions(); }).observe(
+    document.documentElement,
+    { attributes: true, attributeFilter: ['data-lang'] },
+  );
+</script>
+
+<style is:global>
+  .ai-msg { display: flex; }
+  .ai-msg--user { justify-content: flex-end; }
+  .ai-msg--bot { justify-content: flex-start; }
+
+  .ai-bubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.65;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+  .ai-bubble--user {
+    background: linear-gradient(to bottom right, #2563eb, #4f46e5);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .ai-bubble--bot {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+    border-bottom-left-radius: 4px;
+  }
+  .ai-bubble--error { border-color: rgba(248, 113, 113, 0.3); color: #fca5a5; }
+
+  /* Markdown inside bot bubbles */
+  .ai-bubble--bot > *:first-child { margin-top: 0; }
+  .ai-bubble--bot > *:last-child { margin-bottom: 0; }
+  .ai-bubble--bot p { margin: 0 0 8px; }
+  .ai-bubble--bot strong { color: #fff; font-weight: 600; }
+  .ai-bubble--bot h1, .ai-bubble--bot h2, .ai-bubble--bot h3 {
+    font-weight: 600; color: #fff; font-size: 13px; margin: 8px 0 4px;
+  }
+  .ai-bubble--bot ul, .ai-bubble--bot ol { margin: 4px 0 8px; padding-left: 18px; }
+  .ai-bubble--bot li { margin: 2px 0; }
+  .ai-bubble--bot a { color: #60a5fa; text-decoration: underline; }
+  .ai-bubble--bot code {
+    background: rgba(255, 255, 255, 0.1); padding: 1px 5px; border-radius: 5px;
+    font-size: 12px; font-family: ui-monospace, monospace;
+  }
+  .ai-bubble--bot pre {
+    background: #05050c; border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px; padding: 10px 12px; overflow-x: auto; margin: 6px 0;
+  }
+  .ai-bubble--bot pre code { background: none; padding: 0; }
+
+  /* Typing dots */
+  .ai-dots { display: inline-flex; gap: 4px; padding: 2px 0; }
+  .ai-dots i {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5); animation: ai-blink 1.3s infinite;
+  }
+  .ai-dots i:nth-child(2) { animation-delay: 0.2s; }
+  .ai-dots i:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes ai-blink { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
+
+  /* Suggestion chips */
+  .ai-chip {
+    font-size: 11px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1; transition: all 0.2s; text-align: left;
+  }
+  .ai-chip:hover { border-color: rgba(96, 165, 250, 0.4); color: #fff; background: rgba(96, 165, 250, 0.08); }
+
+  /* Scrollbar */
+  .ai-scroll { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.08) transparent; }
+  .ai-scroll::-webkit-scrollbar { width: 4px; }
+  .ai-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
+</style>

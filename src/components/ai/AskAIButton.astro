@@ -1,0 +1,50 @@
+---
+import { Icon } from 'astro-icon/components';
+// Reusable trigger. Drop into any section to open the assistant pre-filled with
+// a context-relevant question. Fires `ai-assistant:ask`, handled once by the
+// AIAssistant controller. Purely presentational + a single delegated listener.
+interface Props {
+  question: string;
+  labelEn?: string;
+  labelId?: string;
+  class?: string;
+  iconOnly?: boolean;
+}
+const { question, labelEn = 'Ask AI', labelId = 'Tanya AI', class: cls = '', iconOnly = false } = Astro.props;
+---
+
+{iconOnly ? (
+  <button
+    type="button"
+    data-ai-question={question}
+    aria-label={labelEn}
+    title={labelEn}
+    class={`ai-ask-trigger inline-flex items-center justify-center h-7 w-7 rounded-full border border-white/10 bg-white/5 text-blue-300/80 hover:text-white hover:border-blue-400/50 hover:bg-blue-400/15 transition-all duration-200 ${cls}`}
+  >
+    <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+  </button>
+) : (
+  <button
+    type="button"
+    data-ai-question={question}
+    class={`ai-ask-trigger inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-400/25 bg-blue-400/10 text-blue-300 hover:text-white hover:border-blue-400/50 hover:bg-blue-400/20 text-xs font-medium transition-all duration-200 ${cls}`}
+  >
+    <Icon name="lucide:sparkles" class="w-3.5 h-3.5" />
+    <span class="i18n-en">{labelEn}</span>
+    <span class="i18n-id">{labelId}</span>
+  </button>
+)}
+
+<script>
+  // Delegated once per page (Astro hoists this module script a single time).
+  document.addEventListener('click', (e) => {
+    const trigger = (e.target as HTMLElement).closest<HTMLElement>('[data-ai-question]');
+    if (!trigger) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const question = trigger.dataset.aiQuestion;
+    if (question) {
+      window.dispatchEvent(new CustomEvent('ai-assistant:ask', { detail: { question } }));
+    }
+  });
+</script>
