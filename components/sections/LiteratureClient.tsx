@@ -69,7 +69,7 @@ export function LiteratureClient({
 				) : (
 					<ScrollReveal
 						delay={0.08}
-						className="text-center py-16 rounded-2xl border border-dashed border-white/10 bg-white/[0.02]"
+						className="text-center py-16 rounded-2xl border border-dashed border-white/10 bg-white/2"
 					>
 						<Icon
 							icon="lucide:book-dashed"

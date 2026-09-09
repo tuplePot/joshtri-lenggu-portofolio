@@ -13,7 +13,7 @@ export default function NotFound() {
 			<div className="absolute w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none -z-10" />
 
 			{/* 404 number */}
-			<p className="text-[clamp(7rem,22vw,14rem)] font-bold leading-none select-none text-transparent bg-clip-text bg-gradient-to-b from-white/90 via-white/50 to-white/10 drop-shadow-[0_0_80px_rgba(100,150,255,0.35)]">
+			<p className="text-[clamp(7rem,22vw,14rem)] font-bold leading-none select-none text-transparent bg-clip-text bg-linear-to-b from-white/90 via-white/50 to-white/10 drop-shadow-[0_0_80px_rgba(100,150,255,0.35)]">
 				404
 			</p>
 

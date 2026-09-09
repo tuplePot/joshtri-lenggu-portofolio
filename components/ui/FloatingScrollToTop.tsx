@@ -41,7 +41,7 @@ export function FloatingScrollToTop() {
 			<div className="relative w-14 h-14">
 				<svg
 					aria-hidden="true"
-					className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-90deg] pointer-events-none"
+					className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 pointer-events-none"
 					width={SVG}
 					height={SVG}
 					viewBox={`0 0 ${SVG} ${SVG}`}

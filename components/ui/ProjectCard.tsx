@@ -94,7 +94,7 @@ export function ProjectCard({ project }: { project: Project }) {
 					</div>
 				)}
 
-				<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+				<div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
 
 				<div className="absolute top-3 left-3 right-3 flex items-center justify-between">
 					{typeInfo && (

@@ -14,7 +14,7 @@ function SkillOrb({ skill }: { skill: Skill }) {
 		<div className="group flex flex-col items-center w-[112px] h-28 shrink-0 cursor-default">
 			<div className="flex flex-1 items-center justify-center w-full">
 				<div
-					className="skill-orb relative w-16 h-16 rounded-full bg-white/[0.03] flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+					className="skill-orb relative w-16 h-16 rounded-full bg-white/3 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
 					style={{ ["--gc" as string]: skill.color }}
 				>
 					<Icon

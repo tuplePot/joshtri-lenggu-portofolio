@@ -216,7 +216,7 @@ export function AIAssistant() {
 					type="button"
 					onClick={() => (open ? closePanel() : openPanel())}
 					aria-label="Ask Josh AI"
-					className="group relative flex items-center gap-2 h-14 pl-4 pr-5 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white shadow-lg shadow-blue-600/30 transition-all duration-200"
+					className="group relative flex items-center gap-2 h-14 pl-4 pr-5 rounded-full bg-linear-to-br from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white shadow-lg shadow-blue-600/30 transition-all duration-200"
 				>
 					<span className="relative flex h-6 w-6 items-center justify-center">
 						<Icon icon="lucide:sparkles" className="w-5 h-5" />
@@ -232,14 +232,14 @@ export function AIAssistant() {
 			<div
 				onClick={closePanel}
 				aria-hidden="true"
-				className={`fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 ${
+				className={`fixed inset-0 z-60 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 ${
 					open ? "opacity-100" : "opacity-0 pointer-events-none"
 				}`}
 			/>
 
 			{/* Centered modal */}
 			<div
-				className={`fixed inset-0 z-[70] flex items-center justify-center p-4 transition-opacity duration-300 ${
+				className={`fixed inset-0 z-70 flex items-center justify-center p-4 transition-opacity duration-300 ${
 					open ? "opacity-100" : "opacity-0 pointer-events-none"
 				}`}
 			>

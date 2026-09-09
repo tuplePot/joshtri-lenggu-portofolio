@@ -141,7 +141,7 @@ export function Header() {
 
 			{/* Mobile menu overlay */}
 			<div
-				className={`fixed inset-0 z-[60] md:hidden transition-opacity duration-300 ${
+				className={`fixed inset-0 z-60 md:hidden transition-opacity duration-300 ${
 					menuOpen
 						? "visible opacity-100"
 						: "invisible opacity-0 pointer-events-none"
@@ -154,7 +154,7 @@ export function Header() {
 				/>
 
 				<div
-					className="absolute top-0 right-0 h-full w-72 border-l border-white/10 flex flex-col transition-transform duration-[350ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+					className="absolute top-0 right-0 h-full w-72 border-l border-white/10 flex flex-col transition-transform duration-350 ease-in-out"
 					style={{
 						background: "rgba(5,5,18,0.97)",
 						backdropFilter: "blur(24px)",

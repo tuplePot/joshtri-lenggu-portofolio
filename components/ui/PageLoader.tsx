@@ -27,7 +27,7 @@ export function PageLoader() {
 
 	return (
 		<div
-			className="fixed inset-0 z-[300] bg-[#050512] flex items-center justify-center pointer-events-none"
+			className="fixed inset-0 z-300 bg-[#050512] flex items-center justify-center pointer-events-none"
 			style={{ transition: "opacity 0.6s ease", opacity: hidden ? 0 : 1 }}
 		>
 			<div className="flex gap-2.5">

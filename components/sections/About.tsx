@@ -192,7 +192,7 @@ export function About() {
 								</div>
 							</div>
 
-							<div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-blue-500/5 to-transparent pointer-events-none" />
+							<div className="absolute bottom-0 inset-x-0 h-16 bg-linear-to-t from-blue-500/5 to-transparent pointer-events-none" />
 						</div>
 					</ScrollReveal>
 				</div>
