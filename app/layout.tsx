@@ -27,7 +27,10 @@ export const metadata: Metadata = {
 	robots: { index: true, follow: true },
 	manifest: "/site.webmanifest",
 	icons: {
-		icon: "/favicon.ico",
+		icon: [
+			{ url: "/favicon.ico", sizes: "any" },
+			{ url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+		],
 		apple: "/apple-touch-icon.png",
 	},
 	openGraph: {
