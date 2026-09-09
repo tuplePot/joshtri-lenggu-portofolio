@@ -3,6 +3,7 @@
 const BLOG_API_BASE = process.env.NEXT_PUBLIC_BLOG_API_URL;
 
 const REVALIDATE_SECONDS = 3600;
+const BLOG_FETCH_TIMEOUT_MS = 10_000;
 
 export interface BlogPost {
 	id: string;
@@ -24,7 +25,10 @@ export async function fetchBlogPosts(
 	if (!BLOG_API_BASE) return [];
 	try {
 		const url = `${BLOG_API_BASE}/api/public/posts?type=${encodeURIComponent(type)}&limit=${limit}`;
-		const res = await fetch(url, { next: { revalidate: REVALIDATE_SECONDS } });
+		const res = await fetch(url, {
+			signal: AbortSignal.timeout(BLOG_FETCH_TIMEOUT_MS),
+			next: { revalidate: REVALIDATE_SECONDS },
+		});
 		if (!res.ok) return [];
 		const json = await res.json();
 		return (json.data ?? []) as BlogPost[];
