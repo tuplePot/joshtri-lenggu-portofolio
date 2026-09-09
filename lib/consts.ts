@@ -18,7 +18,7 @@ export const URLS = {
 	GITHUB: "https://github.com/Joshtri",
 	LINKEDIN:
 		"https://www.linkedin.com/in/arpakhsad-j-s-lenggu-771242201/",
-	INSTAGRAM: "https://www.instagram.com/yosryy_lenggu/",
+	INSTAGRAM: "https://www.instagram.com/joshtrilenggu/",
 	FACEBOOK: "https://www.facebook.com",
 } as const;
 
