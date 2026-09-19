@@ -25,6 +25,9 @@ export const metadata: Metadata = {
 	keywords: SITE_KEYWORDS,
 	alternates: { canonical: "/" },
 	robots: { index: true, follow: true },
+	verification: {
+		google: "tCawBqaDxB30zQZgqiRczg6MQJJqHaoRPivF1XUvOgw",
+	},
 	manifest: "/site.webmanifest",
 	icons: {
 		icon: [
